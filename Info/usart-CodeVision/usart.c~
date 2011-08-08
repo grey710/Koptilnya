@@ -1,0 +1,39 @@
+#include "usart.h"
+
+//однобайтный буфер
+unsigned char usartRxBuf = 0;
+
+//#define RXCIE 
+//#define URSEL
+//#define  
+
+//инициализация usart`a
+void USART_Init(void)
+{
+  UBRRH = 0;
+  UBRRL = 51; //скорость обмена 9600 бод
+  UCSRB = (1<<RXCIE)|(1<<RXEN)|(1<<TXEN); //разр. прерыв при приеме, разр приема, разр передачи.
+  UCSRC = (1<<URSEL)|(1<<UCSZ1)|(1<<UCSZ0); //размер слова 8 разрядов
+}
+
+//отправка символа по usart`у
+void USART_SendChar(unsigned char sym)
+{
+  while(!(UCSRA & (1<<UDRE)));
+  UDR = sym;
+}
+
+//чтение буфера
+unsigned char USART_GetChar(void)
+{
+  unsigned char tmp = usartRxBuf;
+  usartRxBuf = 0;
+  return tmp;  
+}
+
+//прием символа по usart`у в буфер
+interrupt [USART_RXC] void usart_rxc_my(void) 
+{
+  usartRxBuf = UDR; 
+} 
+

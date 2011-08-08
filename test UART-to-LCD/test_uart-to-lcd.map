@@ -1,0 +1,24 @@
+CodeVisionAVR C Compiler V1.25.9 Standard
+(C) Copyright 1998-2008 Pavel Haiduc, HP InfoTech s.r.l.
+http://www.hpinfotech.com
+
+File: D:\Koptilnya\test UART-to-LCD\test_uart-to-lcd.c
+Global variables memory map:
+
+Variable                          Address   Size
+rx_buffer                                                              E0h      8
+rx_wr_index                                                             R5      1
+rx_rd_index                                                             R4      1
+rx_counter                                                              R7      1
+rx_buffer_overflow                                                    R2.0    1/8
+real_temp                                                              E8h      1
+real_time_ch                                                           E9h      1
+real_time_min                                                          EAh      1
+real_time_sek                                                          EBh      1
+lcd_str_1                                                              ECh     16
+lcd_str_2                                                              FCh     16
+_base_y_G3                                                            10Ch      4
+_lcd_x                                                                  R6      1
+_lcd_y                                                                  R9      1
+_lcd_maxx                                                               R8      1
+*p_S56                                                                110h      2

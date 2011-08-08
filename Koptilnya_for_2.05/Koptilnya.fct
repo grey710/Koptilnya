@@ -1,0 +1,6 @@
+main DSTACK_USAGE:0 DSTACK_LEVEL:0 FILE:"Koptilnya.c" LINE:741
+frame DSTACK_USAGE:0 DSTACK_LEVEL:0 FILE:"Koptilnya.c" LINE:355
+sprintf DSTACK_USAGE:14 DSTACK_LEVEL:14 FILE:"C:\cvavr2\lib\stdio.lib" LINE:1402
+_print DSTACK_USAGE:20 DSTACK_LEVEL:34 FILE:"C:\cvavr2\lib\stdio.lib" LINE:503
+strlen DSTACK_USAGE:2 DSTACK_LEVEL:36 FILE:"C:\cvavr2\lib\string.lib" LINE:1659
+usart_rx_isr DSTACK_USAGE:5 DSTACK_LEVEL:41 FILE:"Koptilnya.c" LINE:71

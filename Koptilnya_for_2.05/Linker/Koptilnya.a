@@ -1,0 +1,2608 @@
+;/*****************************************************
+;CodeWizardAVR V2.05.0 Professional
+;Project : Koptilnya
+;Version : 1
+;Date    : 14.07.2011
+;
+;Chip type               : ATmega8535
+;AVR Core Clock frequency: 7,813000 MHz
+;*****************************************************/
+;// Standard Input/Output functions
+;#include <mega8535.h>
+;PCODE: $00000000 VOL: 0
+	#ifndef __SLEEP_DEFINED__
+;PCODE: $00000001 VOL: 0
+	#define __SLEEP_DEFINED__
+;PCODE: $00000002 VOL: 0
+	.EQU __se_bit=0x40
+;PCODE: $00000003 VOL: 0
+	.EQU __sm_mask=0xB0
+;PCODE: $00000004 VOL: 0
+	.EQU __sm_powerdown=0x20
+;PCODE: $00000005 VOL: 0
+	.EQU __sm_powersave=0x30
+;PCODE: $00000006 VOL: 0
+	.EQU __sm_standby=0xA0
+;PCODE: $00000007 VOL: 0
+	.EQU __sm_ext_standby=0xB0
+;PCODE: $00000008 VOL: 0
+	.EQU __sm_adc_noise_red=0x10
+;PCODE: $00000009 VOL: 0
+	.SET power_ctrl_reg=mcucr
+;PCODE: $0000000A VOL: 0
+	#endif
+;PCODE: $0000000B VOL: 0
+;PCODE: $0000000C VOL: 0
+;#include <stdio.h>
+;#include <delay.h>
+;
+;// Alphanumeric LCD Module functions
+;//Инициализация экрана
+;#asm
+;PCODE: $0000000D VOL: 0
+  .equ __lcd_port=0x18 ;PORTB
+;PCODE: $0000000E VOL: 0
+;PCODE: $0000000F VOL: 0
+; 0000 0013 #endasm
+;#include <lcd.h>
+;//#include "lcd_rus\lcd_rus.h"
+;//=================================
+;#ifndef RXB8
+;#define RXB8 1
+;#endif
+;
+;#ifndef TXB8
+;#define TXB8 0
+;#endif
+;
+;#ifndef UPE
+;#define UPE 2
+;#endif
+;
+;#ifndef DOR
+;#define DOR 3
+;#endif
+;
+;#ifndef FE
+;#define FE 4
+;#endif
+;
+;#ifndef UDRE
+;#define UDRE 5
+;#endif
+;
+;#ifndef RXC
+;#define RXC 7
+;#endif
+;
+;#define FRAMING_ERROR       (1<<FE)
+;#define PARITY_ERROR        (1<<UPE)
+;#define DATA_OVERRUN        (1<<DOR)
+;#define DATA_REGISTER_EMPTY (1<<UDRE)
+;#define RX_COMPLETE         (1<<RXC)
+;
+;#define _DEBUG_TERMINAL_IO_
+;
+;// USART Receiver buffer
+;#define RX_BUFFER_SIZE 8
+;char rx_buffer[RX_BUFFER_SIZE];
+;
+;//unsigned char rx_wr_index,rx_rd_index,rx_counter;
+;unsigned char rx_wr_index,rx_counter;
+;
+;// This flag is set on USART Receiver buffer overflow
+;bit rx_buffer_overflow;
+;
+;//===================================================================
+;// USART Receiver interrupt service routine
+;interrupt [USART_RXC] void usart_rx_isr(void)
+; 0000 0048 {
+
+	.CSEG
+;PCODE: $00000010 VOL: 0
+;PCODE: $00000011 VOL: 0
+; 0000 0049 char status,data;
+; 0000 004A 
+; 0000 004B #asm("cli")
+;PCODE: $00000012 VOL: 0
+;	status -> R17
+;	data -> R16
+;PCODE: $00000013 VOL: 0
+	cli
+;PCODE: $00000014 VOL: 0
+; 0000 004C 
+; 0000 004D status=UCSRA;
+;PCODE: $00000015 VOL: 0
+;PCODE: $00000016 VOL: 0
+; 0000 004E data=UDR;
+;PCODE: $00000017 VOL: 0
+;PCODE: $00000018 VOL: 0
+; 0000 004F if ((status & (FRAMING_ERROR | PARITY_ERROR | DATA_OVERRUN))==0)
+;PCODE: $00000019 VOL: 0
+;PCODE: $0000001A VOL: 0
+;PCODE: $0000001B VOL: 0
+; 0000 0050     {
+; 0000 0051         rx_buffer[rx_wr_index++]=data;
+;PCODE: $0000001C VOL: 0
+;PCODE: $0000001D VOL: 0
+;PCODE: $0000001E VOL: 0
+;PCODE: $0000001F VOL: 0
+;PCODE: $00000020 VOL: 0
+; 0000 0052 
+; 0000 0053         if (rx_wr_index == RX_BUFFER_SIZE) rx_wr_index=0;
+;PCODE: $00000021 VOL: 0
+;PCODE: $00000022 VOL: 0
+;PCODE: $00000023 VOL: 0
+;PCODE: $00000024 VOL: 0
+; 0000 0054         if (++rx_counter == RX_BUFFER_SIZE)
+;PCODE: $00000025 VOL: 0
+;PCODE: $00000026 VOL: 0
+;PCODE: $00000027 VOL: 0
+;PCODE: $00000028 VOL: 0
+;PCODE: $00000029 VOL: 0
+; 0000 0055         {
+; 0000 0056             rx_counter=0;
+;PCODE: $0000002A VOL: 0
+; 0000 0057             rx_buffer_overflow=1;
+;PCODE: $0000002B VOL: 0
+;PCODE: $0000002C VOL: 0
+;PCODE: $0000002D VOL: 0
+; 0000 0058         }
+; 0000 0059     }
+;PCODE: $0000002E VOL: 0
+; 0000 005A #asm("sei")
+;PCODE: $0000002F VOL: 0
+;PCODE: $00000030 VOL: 0
+	sei
+;PCODE: $00000031 VOL: 0
+; 0000 005B }
+;PCODE: $00000032 VOL: 0
+;PCODE: $00000033 VOL: 0
+;PCODE: $00000034 VOL: 0
+;PCODE: $00000035 VOL: 0
+;
+;#ifndef _DEBUG_TERMINAL_IO_
+;// Get a character from the USART Receiver buffer
+;#define _ALTERNATE_GETCHAR_
+;
+;#pragma used+
+;
+;char getchar(void)
+;{
+;    char data;
+;    while (rx_counter==0);
+;    data=rx_buffer[rx_rd_index++];
+;
+;    #asm("cli")
+;    --rx_counter;
+;    #asm("sei")
+;    return data;
+;}
+;
+;#pragma used-
+;#endif
+;
+;//=============================================================================
+;// управление в режимах
+;//порты подключения управляющих реле
+;#define blok_lamp_1_ON         PORTA.0 = 1    //Включатель/выключатель первого блока ламп
+;#define blok_lamp_2_ON         PORTA.1 = 1    //Включатель/выключатель второго блока ламп
+;#define blok_lamp_3_ON         PORTA.2 = 1    //Включатель/выключатель третьего блока ламп
+;#define blok_lamp_en_ON        PORTA.3 = 1    //Включатель блока ламп
+;#define blok_lamp_dis_ON       PORTA.4 = 1    //Выключатель блока ламп
+;#define blok_silovoy_en_ON     PORTA.5 = 1    //Включатель блока электромагнит, дымогенератор, высокое напряжение
+;#define blok_silovoy_dis_ON    PORTA.6 = 1    //Выключатель блока электромагнит, дымогенератор, высокое напряжение
+;#define blok_rezerv_ON         PORTA.7 = 1    //резерв
+;
+;#define blok_lamp_1_OFF         PORTA.0 = 0      //Включатель/выключатель первого блока ламп
+;#define blok_lamp_2_OFF         PORTA.1 = 0     //Включатель/выключатель второго блока ламп
+;#define blok_lamp_3_OFF         PORTA.2 = 0     //Включатель/выключатель третьего блока ламп
+;#define blok_lamp_en_OFF        PORTA.3 = 0     //Включатель блока ламп
+;#define blok_lamp_dis_OFF       PORTA.4 = 0     //Выключатель блока ламп
+;#define blok_silovoy_en_OFF     PORTA.5 = 0     //Включатель блока электромагнит, дымогенератор, высокое напряжение
+;#define blok_silovoy_dis_OFF    PORTA.6 = 0     //Выключатель блока электромагнит, дымогенератор, высокое напряжение
+;#define blok_rezerv_OFF         PORTA.7 = 0     //резерв
+;
+;//=============================================================================
+;//Режимы работы                                         regim_rabot
+;//Инициализация (заставка при включении).               1
+;//Корректировка максимальной температуры разогрева. 	11
+;//Корректировка минимальной температуры разогрева.      12
+;//Корректировка максимальной температуры копчения.  	21
+;//Корректировка минимальной температуры копчения.       22
+;//Корректировка часов времени работы.	                31
+;//Корректировка минут времени работы.                   32
+;//Корректировка часов времени работы вытяжки.	        41
+;//Корректировка минут времени работы вытяжки.	        42
+;//Работа в режиме разогрева.	                        60
+;//Работа в режиме копчения.                             70
+;//Работа в режиме остывания.	                        80
+;//STOP	                                                100
+;//===============================================================================
+;//порты обозначения кнопок
+;#define kn_vverh            PINC.0
+;#define kn_vniz             PINC.1
+;#define kn_vpravo           PINC.2
+;#define kn_vlevo            PINC.3
+;#define kn_ENTER            PINC.4
+;#define kn_ESC              PINC.5
+;
+;//==========================================================================
+;// Глобальные переменные
+;volatile unsigned char t_max_razogrev     = 115;    // максимальная температура разогрева, в градусах Цельсия
+
+	.DSEG
+;volatile unsigned char t_max_rabochee     = 75;     // максимальная температура работы, в градусах Цельсия
+;volatile unsigned char t_min_razogrev     = 105;    // минимальная  температура разогрева, в градусах Цельсия
+;volatile unsigned char t_min_rabochee     = 65;     // минимальная температура работы, в градусах Цельсия
+;
+;volatile unsigned char time_rabota_ch     = 4;      // время работы, измеряется в часах
+;volatile unsigned char time_rabota_min    = 30;     // время работы, измеряется в минутах
+;volatile unsigned char time_smoke_ch      = 0;      // время работы вытяжки, задается в часах
+;volatile unsigned char time_smoke_min     = 10;     // время работы вытяжки, задается в минутах
+;
+;volatile unsigned char real_time_ch       = 0;      // текущее время работы в часах
+;volatile unsigned char real_time_min      = 0;      // текущее время работы в минутах
+;volatile unsigned char real_time_sek      = 0;      // текущее время работы в минутах
+;
+;volatile unsigned char real_temp          = 0;      // минимальная температура работы, в градусах Цельсия
+;
+;volatile unsigned char real_temp_1razryad = 0;      // 1 разряд температуры при отображении
+;volatile unsigned char real_temp_2razryad = 0;      // 2 разряд температуры при отображении
+;volatile unsigned char real_temp_3razryad = 0;      // 3 разряд температуры при отображении
+;
+;volatile unsigned char regim_rabot        = 1;      // состояние режим работы
+;volatile unsigned char regim_rabot_old    = 1;      // предыдущее состояние режима работы
+;
+;unsigned char zadergka_pri_nagatii        = 200;    // задержка при нажатии кнопки
+;int zadergka_zastavka                     = 1000;    // время показа заставки
+;unsigned char t_puskatel                  = 100;    // необходимое время для старта пускателя
+;
+;volatile char lcd_str_1[16];
+;volatile char lcd_str_2[16];
+;
+;//=============================================================================
+;// Объявление без задания функций. (для обеспечения компиляции)
+;void frame(void);
+;void screen(void);
+;void regim(void);
+;void init(void);
+;//=============================================================================
+;// прерывание ежесекундного (или 0,2 секундного таймера)
+;interrupt [TIM1_COMPA] void timer1_compa_isr(void)
+; 0000 00C8 {
+
+	.CSEG
+;PCODE: $00000036 VOL: 0
+;PCODE: $00000037 VOL: 0
+; 0000 00C9     #asm("cli")
+;PCODE: $00000038 VOL: 0
+	cli
+;PCODE: $00000039 VOL: 0
+; 0000 00CA 
+; 0000 00CB     TCNT1H=0;
+;PCODE: $0000003A VOL: 0
+;PCODE: $0000003B VOL: 0
+; 0000 00CC     TCNT1L=0;
+;PCODE: $0000003C VOL: 0
+;PCODE: $0000003D VOL: 0
+; 0000 00CD 
+; 0000 00CE     real_time_sek++;
+;PCODE: $0000003E VOL: 1
+;PCODE: $0000003F VOL: 0
+;PCODE: $00000040 VOL: 1
+; 0000 00CF   	if (real_time_sek == 60) real_time_min++,	real_time_sek =0 ;
+;PCODE: $00000041 VOL: 1
+;PCODE: $00000042 VOL: 0
+;PCODE: $00000043 VOL: 0
+;PCODE: $00000044 VOL: 1
+;PCODE: $00000045 VOL: 0
+;PCODE: $00000046 VOL: 1
+;PCODE: $00000047 VOL: 0
+;PCODE: $00000048 VOL: 1
+; 0000 00D0 	if (real_time_min == 60) real_time_ch++,	real_time_min =0 ;
+;PCODE: $00000049 VOL: 0
+;PCODE: $0000004A VOL: 1
+;PCODE: $0000004B VOL: 0
+;PCODE: $0000004C VOL: 0
+;PCODE: $0000004D VOL: 1
+;PCODE: $0000004E VOL: 0
+;PCODE: $0000004F VOL: 1
+;PCODE: $00000050 VOL: 0
+;PCODE: $00000051 VOL: 1
+; 0000 00D1 	if (real_time_ch  == 24) real_time_ch=0;
+;PCODE: $00000052 VOL: 0
+;PCODE: $00000053 VOL: 1
+;PCODE: $00000054 VOL: 0
+;PCODE: $00000055 VOL: 0
+;PCODE: $00000056 VOL: 0
+;PCODE: $00000057 VOL: 1
+; 0000 00D2 
+; 0000 00D3     #asm("sei")
+;PCODE: $00000058 VOL: 0
+;PCODE: $00000059 VOL: 0
+	sei
+;PCODE: $0000005A VOL: 0
+; 0000 00D4 
+; 0000 00D5 //    frame();
+; 0000 00D6 //    screen();
+; 0000 00D7 }
+;PCODE: $0000005B VOL: 0
+;PCODE: $0000005C VOL: 0
+;PCODE: $0000005D VOL: 0
+;
+;//=============================================================================
+;// Реакция на нажатие кнопки вверх
+;void vverh (void)
+; 0000 00DC {
+;PCODE: $0000005E VOL: 0
+;PCODE: $0000005F VOL: 0
+; 0000 00DD     switch(regim_rabot)
+;PCODE: $00000060 VOL: 1
+;PCODE: $00000061 VOL: 0
+; 0000 00DE     {
+; 0000 00DF         case 11:    t_max_razogrev++;    break;
+;PCODE: $00000062 VOL: 0
+;PCODE: $00000063 VOL: 0
+;PCODE: $00000064 VOL: 1
+;PCODE: $00000065 VOL: 0
+;PCODE: $00000066 VOL: 1
+;PCODE: $00000067 VOL: 0
+; 0000 00E0         case 12:    t_min_razogrev++;    break;
+;PCODE: $00000068 VOL: 0
+;PCODE: $00000069 VOL: 0
+;PCODE: $0000006A VOL: 0
+;PCODE: $0000006B VOL: 1
+;PCODE: $0000006C VOL: 0
+;PCODE: $0000006D VOL: 1
+;PCODE: $0000006E VOL: 0
+; 0000 00E1         case 21:    t_max_rabochee++;    break;
+;PCODE: $0000006F VOL: 0
+;PCODE: $00000070 VOL: 0
+;PCODE: $00000071 VOL: 0
+;PCODE: $00000072 VOL: 1
+;PCODE: $00000073 VOL: 0
+;PCODE: $00000074 VOL: 1
+;PCODE: $00000075 VOL: 0
+; 0000 00E2         case 22:    t_min_rabochee++;    break;
+;PCODE: $00000076 VOL: 0
+;PCODE: $00000077 VOL: 0
+;PCODE: $00000078 VOL: 0
+;PCODE: $00000079 VOL: 1
+;PCODE: $0000007A VOL: 0
+;PCODE: $0000007B VOL: 1
+;PCODE: $0000007C VOL: 0
+; 0000 00E3         case 31:    time_rabota_ch++;    break;
+;PCODE: $0000007D VOL: 0
+;PCODE: $0000007E VOL: 0
+;PCODE: $0000007F VOL: 0
+;PCODE: $00000080 VOL: 1
+;PCODE: $00000081 VOL: 0
+;PCODE: $00000082 VOL: 1
+;PCODE: $00000083 VOL: 0
+; 0000 00E4         case 32:    time_rabota_min++;   break;
+;PCODE: $00000084 VOL: 0
+;PCODE: $00000085 VOL: 0
+;PCODE: $00000086 VOL: 0
+;PCODE: $00000087 VOL: 1
+;PCODE: $00000088 VOL: 0
+;PCODE: $00000089 VOL: 1
+;PCODE: $0000008A VOL: 0
+; 0000 00E5         case 41:    time_smoke_ch++;     break;
+;PCODE: $0000008B VOL: 0
+;PCODE: $0000008C VOL: 0
+;PCODE: $0000008D VOL: 0
+;PCODE: $0000008E VOL: 1
+;PCODE: $0000008F VOL: 0
+;PCODE: $00000090 VOL: 1
+;PCODE: $00000091 VOL: 0
+; 0000 00E6         case 42:    time_smoke_min++;    break;
+;PCODE: $00000092 VOL: 0
+;PCODE: $00000093 VOL: 0
+;PCODE: $00000094 VOL: 0
+;PCODE: $00000095 VOL: 1
+;PCODE: $00000096 VOL: 0
+;PCODE: $00000097 VOL: 1
+;PCODE: $00000098 VOL: 0
+; 0000 00E7         default    :    {};
+;PCODE: $00000099 VOL: 0
+; 0000 00E8     }
+;PCODE: $0000009A VOL: 0
+; 0000 00E9 }
+;PCODE: $0000009B VOL: 0
+;PCODE: $0000009C VOL: 0
+;
+;// Реакция на нажатие кнопки вниз
+;void vniz (void)
+; 0000 00ED {
+;PCODE: $0000009D VOL: 0
+;PCODE: $0000009E VOL: 0
+; 0000 00EE     switch(regim_rabot)
+;PCODE: $0000009F VOL: 1
+;PCODE: $000000A0 VOL: 0
+; 0000 00EF     {
+; 0000 00F0         case 11:	t_max_razogrev--;	break;
+;PCODE: $000000A1 VOL: 0
+;PCODE: $000000A2 VOL: 0
+;PCODE: $000000A3 VOL: 1
+;PCODE: $000000A4 VOL: 0
+;PCODE: $000000A5 VOL: 1
+;PCODE: $000000A6 VOL: 0
+; 0000 00F1         case 12:	t_min_razogrev--;	break;
+;PCODE: $000000A7 VOL: 0
+;PCODE: $000000A8 VOL: 0
+;PCODE: $000000A9 VOL: 0
+;PCODE: $000000AA VOL: 1
+;PCODE: $000000AB VOL: 0
+;PCODE: $000000AC VOL: 1
+;PCODE: $000000AD VOL: 0
+; 0000 00F2         case 21:	t_max_rabochee--;	break;
+;PCODE: $000000AE VOL: 0
+;PCODE: $000000AF VOL: 0
+;PCODE: $000000B0 VOL: 0
+;PCODE: $000000B1 VOL: 1
+;PCODE: $000000B2 VOL: 0
+;PCODE: $000000B3 VOL: 1
+;PCODE: $000000B4 VOL: 0
+; 0000 00F3         case 22:	t_min_rabochee--;	break;
+;PCODE: $000000B5 VOL: 0
+;PCODE: $000000B6 VOL: 0
+;PCODE: $000000B7 VOL: 0
+;PCODE: $000000B8 VOL: 1
+;PCODE: $000000B9 VOL: 0
+;PCODE: $000000BA VOL: 1
+;PCODE: $000000BB VOL: 0
+; 0000 00F4         case 31:	time_rabota_ch--;	break;
+;PCODE: $000000BC VOL: 0
+;PCODE: $000000BD VOL: 0
+;PCODE: $000000BE VOL: 0
+;PCODE: $000000BF VOL: 1
+;PCODE: $000000C0 VOL: 0
+;PCODE: $000000C1 VOL: 1
+;PCODE: $000000C2 VOL: 0
+; 0000 00F5         case 32:	time_rabota_min--;	break;
+;PCODE: $000000C3 VOL: 0
+;PCODE: $000000C4 VOL: 0
+;PCODE: $000000C5 VOL: 0
+;PCODE: $000000C6 VOL: 1
+;PCODE: $000000C7 VOL: 0
+;PCODE: $000000C8 VOL: 1
+;PCODE: $000000C9 VOL: 0
+; 0000 00F6         case 41:	time_smoke_ch--;	break;
+;PCODE: $000000CA VOL: 0
+;PCODE: $000000CB VOL: 0
+;PCODE: $000000CC VOL: 0
+;PCODE: $000000CD VOL: 1
+;PCODE: $000000CE VOL: 0
+;PCODE: $000000CF VOL: 1
+;PCODE: $000000D0 VOL: 0
+; 0000 00F7         case 42:	time_smoke_min--;	break;
+;PCODE: $000000D1 VOL: 0
+;PCODE: $000000D2 VOL: 0
+;PCODE: $000000D3 VOL: 0
+;PCODE: $000000D4 VOL: 1
+;PCODE: $000000D5 VOL: 0
+;PCODE: $000000D6 VOL: 1
+;PCODE: $000000D7 VOL: 0
+; 0000 00F8         default	:	{};
+;PCODE: $000000D8 VOL: 0
+; 0000 00F9     }
+;PCODE: $000000D9 VOL: 0
+; 0000 00FA }
+;PCODE: $000000DA VOL: 0
+;PCODE: $000000DB VOL: 0
+;
+;// Реакция на нажатие кнопки вправо
+;void vpravo(void)
+; 0000 00FE {
+;PCODE: $000000DC VOL: 0
+;PCODE: $000000DD VOL: 0
+; 0000 00FF     switch(regim_rabot)
+;PCODE: $000000DE VOL: 1
+;PCODE: $000000DF VOL: 0
+; 0000 0100     {
+; 0000 0101         case 11:	regim_rabot = 12;	break;
+;PCODE: $000000E0 VOL: 0
+;PCODE: $000000E1 VOL: 0
+;PCODE: $000000E2 VOL: 0
+;PCODE: $000000E3 VOL: 1
+;PCODE: $000000E4 VOL: 0
+; 0000 0102         case 12:	regim_rabot = 21;	break;
+;PCODE: $000000E5 VOL: 0
+;PCODE: $000000E6 VOL: 0
+;PCODE: $000000E7 VOL: 0
+;PCODE: $000000E8 VOL: 0
+;PCODE: $000000E9 VOL: 1
+;PCODE: $000000EA VOL: 0
+; 0000 0103         case 21:	regim_rabot = 22;	break;
+;PCODE: $000000EB VOL: 0
+;PCODE: $000000EC VOL: 0
+;PCODE: $000000ED VOL: 0
+;PCODE: $000000EE VOL: 0
+;PCODE: $000000EF VOL: 1
+;PCODE: $000000F0 VOL: 0
+; 0000 0104         case 22:	regim_rabot = 31;	break;
+;PCODE: $000000F1 VOL: 0
+;PCODE: $000000F2 VOL: 0
+;PCODE: $000000F3 VOL: 0
+;PCODE: $000000F4 VOL: 0
+;PCODE: $000000F5 VOL: 1
+;PCODE: $000000F6 VOL: 0
+; 0000 0105         case 31:	regim_rabot = 32;	break;
+;PCODE: $000000F7 VOL: 0
+;PCODE: $000000F8 VOL: 0
+;PCODE: $000000F9 VOL: 0
+;PCODE: $000000FA VOL: 0
+;PCODE: $000000FB VOL: 1
+;PCODE: $000000FC VOL: 0
+; 0000 0106         case 32:	regim_rabot = 41;	break;
+;PCODE: $000000FD VOL: 0
+;PCODE: $000000FE VOL: 0
+;PCODE: $000000FF VOL: 0
+;PCODE: $00000100 VOL: 0
+;PCODE: $00000101 VOL: 1
+;PCODE: $00000102 VOL: 0
+; 0000 0107         case 41:	regim_rabot = 42;	break;
+;PCODE: $00000103 VOL: 0
+;PCODE: $00000104 VOL: 0
+;PCODE: $00000105 VOL: 0
+;PCODE: $00000106 VOL: 0
+;PCODE: $00000107 VOL: 1
+;PCODE: $00000108 VOL: 0
+; 0000 0108         case 42:	regim_rabot = 11;	break;
+;PCODE: $00000109 VOL: 0
+;PCODE: $0000010A VOL: 0
+;PCODE: $0000010B VOL: 0
+;PCODE: $0000010C VOL: 0
+;PCODE: $0000010D VOL: 1
+;PCODE: $0000010E VOL: 0
+; 0000 0109         default	:	{};
+;PCODE: $0000010F VOL: 0
+; 0000 010A     }
+;PCODE: $00000110 VOL: 0
+; 0000 010B }
+;PCODE: $00000111 VOL: 0
+;PCODE: $00000112 VOL: 0
+;
+;// Реакция на нажатие кнопки влево
+;void vlevo(void)
+; 0000 010F {
+;PCODE: $00000113 VOL: 0
+;PCODE: $00000114 VOL: 0
+; 0000 0110     switch(regim_rabot)
+;PCODE: $00000115 VOL: 1
+;PCODE: $00000116 VOL: 0
+; 0000 0111     {
+; 0000 0112         case 11:	regim_rabot = 42;	break;
+;PCODE: $00000117 VOL: 0
+;PCODE: $00000118 VOL: 0
+;PCODE: $00000119 VOL: 0
+;PCODE: $0000011A VOL: 1
+;PCODE: $0000011B VOL: 0
+; 0000 0113         case 12:	regim_rabot = 11;	break;
+;PCODE: $0000011C VOL: 0
+;PCODE: $0000011D VOL: 0
+;PCODE: $0000011E VOL: 0
+;PCODE: $0000011F VOL: 0
+;PCODE: $00000120 VOL: 1
+;PCODE: $00000121 VOL: 0
+; 0000 0114         case 21:	regim_rabot = 12;	break;
+;PCODE: $00000122 VOL: 0
+;PCODE: $00000123 VOL: 0
+;PCODE: $00000124 VOL: 0
+;PCODE: $00000125 VOL: 0
+;PCODE: $00000126 VOL: 1
+;PCODE: $00000127 VOL: 0
+; 0000 0115         case 22:	regim_rabot = 21;	break;
+;PCODE: $00000128 VOL: 0
+;PCODE: $00000129 VOL: 0
+;PCODE: $0000012A VOL: 0
+;PCODE: $0000012B VOL: 0
+;PCODE: $0000012C VOL: 1
+;PCODE: $0000012D VOL: 0
+; 0000 0116         case 31:	regim_rabot = 22;	break;
+;PCODE: $0000012E VOL: 0
+;PCODE: $0000012F VOL: 0
+;PCODE: $00000130 VOL: 0
+;PCODE: $00000131 VOL: 0
+;PCODE: $00000132 VOL: 1
+;PCODE: $00000133 VOL: 0
+; 0000 0117         case 32:	regim_rabot = 31;	break;
+;PCODE: $00000134 VOL: 0
+;PCODE: $00000135 VOL: 0
+;PCODE: $00000136 VOL: 0
+;PCODE: $00000137 VOL: 0
+;PCODE: $00000138 VOL: 1
+;PCODE: $00000139 VOL: 0
+; 0000 0118         case 41:	regim_rabot = 32;	break;
+;PCODE: $0000013A VOL: 0
+;PCODE: $0000013B VOL: 0
+;PCODE: $0000013C VOL: 0
+;PCODE: $0000013D VOL: 0
+;PCODE: $0000013E VOL: 1
+;PCODE: $0000013F VOL: 0
+; 0000 0119         case 42:	regim_rabot = 41;	break;
+;PCODE: $00000140 VOL: 0
+;PCODE: $00000141 VOL: 0
+;PCODE: $00000142 VOL: 0
+;PCODE: $00000143 VOL: 0
+;PCODE: $00000144 VOL: 1
+;PCODE: $00000145 VOL: 0
+; 0000 011A         default	:	{};
+;PCODE: $00000146 VOL: 0
+; 0000 011B     }
+;PCODE: $00000147 VOL: 0
+; 0000 011C }
+;PCODE: $00000148 VOL: 0
+;PCODE: $00000149 VOL: 0
+;// Реакция на нажатие кнопки enter
+;void enter(void)
+; 0000 011F {
+;PCODE: $0000014A VOL: 0
+;PCODE: $0000014B VOL: 0
+; 0000 0120     switch(regim_rabot)
+;PCODE: $0000014C VOL: 1
+;PCODE: $0000014D VOL: 0
+; 0000 0121     {
+; 0000 0122         case 11:	regim_rabot = 60;	break;
+;PCODE: $0000014E VOL: 0
+;PCODE: $0000014F VOL: 0
+;PCODE: $00000150 VOL: 0
+;PCODE: $00000151 VOL: 1
+;PCODE: $00000152 VOL: 0
+; 0000 0123         case 12:	regim_rabot = 60;	break;
+;PCODE: $00000153 VOL: 0
+;PCODE: $00000154 VOL: 0
+;PCODE: $00000155 VOL: 0
+;PCODE: $00000156 VOL: 0
+;PCODE: $00000157 VOL: 1
+;PCODE: $00000158 VOL: 0
+; 0000 0124         case 21:	regim_rabot = 60;	break;
+;PCODE: $00000159 VOL: 0
+;PCODE: $0000015A VOL: 0
+;PCODE: $0000015B VOL: 0
+;PCODE: $0000015C VOL: 0
+;PCODE: $0000015D VOL: 1
+;PCODE: $0000015E VOL: 0
+; 0000 0125         case 22:	regim_rabot = 60;	break;
+;PCODE: $0000015F VOL: 0
+;PCODE: $00000160 VOL: 0
+;PCODE: $00000161 VOL: 0
+;PCODE: $00000162 VOL: 0
+;PCODE: $00000163 VOL: 1
+;PCODE: $00000164 VOL: 0
+; 0000 0126         case 31:	regim_rabot = 60;	break;
+;PCODE: $00000165 VOL: 0
+;PCODE: $00000166 VOL: 0
+;PCODE: $00000167 VOL: 0
+;PCODE: $00000168 VOL: 0
+;PCODE: $00000169 VOL: 1
+;PCODE: $0000016A VOL: 0
+; 0000 0127         case 32:	regim_rabot = 60;	break;
+;PCODE: $0000016B VOL: 0
+;PCODE: $0000016C VOL: 0
+;PCODE: $0000016D VOL: 0
+;PCODE: $0000016E VOL: 0
+;PCODE: $0000016F VOL: 1
+;PCODE: $00000170 VOL: 0
+; 0000 0128         case 41:	regim_rabot = 60;	break;
+;PCODE: $00000171 VOL: 0
+;PCODE: $00000172 VOL: 0
+;PCODE: $00000173 VOL: 0
+;PCODE: $00000174 VOL: 0
+;PCODE: $00000175 VOL: 1
+;PCODE: $00000176 VOL: 0
+; 0000 0129         case 42:	regim_rabot = 60;	break;
+;PCODE: $00000177 VOL: 0
+;PCODE: $00000178 VOL: 0
+;PCODE: $00000179 VOL: 0
+;PCODE: $0000017A VOL: 0
+;PCODE: $0000017B VOL: 1
+;PCODE: $0000017C VOL: 0
+; 0000 012A         default	:	{};
+;PCODE: $0000017D VOL: 0
+; 0000 012B     }
+;PCODE: $0000017E VOL: 0
+; 0000 012C }
+;PCODE: $0000017F VOL: 0
+;PCODE: $00000180 VOL: 0
+;
+;// Реакция на нажатие кнопки esc
+;void esc(void)
+; 0000 0130 {
+;PCODE: $00000181 VOL: 0
+;PCODE: $00000182 VOL: 0
+; 0000 0131     regim_rabot        = 11;
+;PCODE: $00000183 VOL: 0
+;PCODE: $00000184 VOL: 1
+; 0000 0132     real_time_ch       = 0;      // текущее время работы в часах
+;PCODE: $00000185 VOL: 0
+;PCODE: $00000186 VOL: 1
+; 0000 0133     real_time_min      = 0;      // текущее время работы в минутах
+;PCODE: $00000187 VOL: 0
+;PCODE: $00000188 VOL: 1
+; 0000 0134     real_time_sek      = 0;      // текущее время работы в минутах
+;PCODE: $00000189 VOL: 0
+;PCODE: $0000018A VOL: 1
+; 0000 0135 }
+;PCODE: $0000018B VOL: 0
+;PCODE: $0000018C VOL: 0
+;
+;// проверка нажатия кнопок
+;void klaviatura(void)
+; 0000 0139 {
+;PCODE: $0000018D VOL: 0
+;PCODE: $0000018E VOL: 0
+; 0000 013A         if (PINC.0==0) {
+;PCODE: $0000018F VOL: 0
+;PCODE: $00000190 VOL: 0
+;PCODE: $00000191 VOL: 0
+; 0000 013B             delay_ms(zadergka_pri_nagatii);
+;PCODE: $00000192 VOL: 0
+;PCODE: $00000193 VOL: 0
+;PCODE: $00000194 VOL: 0
+;PCODE: $00000195 VOL: 0
+; 0000 013C             vverh();
+;PCODE: $00000196 VOL: 0
+; 0000 013D             }
+; 0000 013E         if (PINC.1==0) {
+;PCODE: $00000197 VOL: 0
+;PCODE: $00000198 VOL: 0
+;PCODE: $00000199 VOL: 0
+;PCODE: $0000019A VOL: 0
+; 0000 013F             delay_ms(zadergka_pri_nagatii);
+;PCODE: $0000019B VOL: 0
+;PCODE: $0000019C VOL: 0
+;PCODE: $0000019D VOL: 0
+;PCODE: $0000019E VOL: 0
+; 0000 0140             vlevo();
+;PCODE: $0000019F VOL: 0
+; 0000 0141             }
+; 0000 0142         if (PINC.2==0) {
+;PCODE: $000001A0 VOL: 0
+;PCODE: $000001A1 VOL: 0
+;PCODE: $000001A2 VOL: 0
+;PCODE: $000001A3 VOL: 0
+; 0000 0143             delay_ms(zadergka_pri_nagatii);
+;PCODE: $000001A4 VOL: 0
+;PCODE: $000001A5 VOL: 0
+;PCODE: $000001A6 VOL: 0
+;PCODE: $000001A7 VOL: 0
+; 0000 0144             vniz();
+;PCODE: $000001A8 VOL: 0
+; 0000 0145             }
+; 0000 0146         if (PINC.3==0) {
+;PCODE: $000001A9 VOL: 0
+;PCODE: $000001AA VOL: 0
+;PCODE: $000001AB VOL: 0
+;PCODE: $000001AC VOL: 0
+; 0000 0147             delay_ms(zadergka_pri_nagatii);
+;PCODE: $000001AD VOL: 0
+;PCODE: $000001AE VOL: 0
+;PCODE: $000001AF VOL: 0
+;PCODE: $000001B0 VOL: 0
+; 0000 0148             vpravo();
+;PCODE: $000001B1 VOL: 0
+; 0000 0149             }
+; 0000 014A         if (PINC.4==0) {
+;PCODE: $000001B2 VOL: 0
+;PCODE: $000001B3 VOL: 0
+;PCODE: $000001B4 VOL: 0
+;PCODE: $000001B5 VOL: 0
+; 0000 014B             delay_ms(zadergka_pri_nagatii);
+;PCODE: $000001B6 VOL: 0
+;PCODE: $000001B7 VOL: 0
+;PCODE: $000001B8 VOL: 0
+;PCODE: $000001B9 VOL: 0
+; 0000 014C             enter();
+;PCODE: $000001BA VOL: 0
+; 0000 014D             }
+; 0000 014E         if (PINC.5==0) {
+;PCODE: $000001BB VOL: 0
+;PCODE: $000001BC VOL: 0
+;PCODE: $000001BD VOL: 0
+;PCODE: $000001BE VOL: 0
+; 0000 014F             delay_ms(zadergka_pri_nagatii);
+;PCODE: $000001BF VOL: 0
+;PCODE: $000001C0 VOL: 0
+;PCODE: $000001C1 VOL: 0
+;PCODE: $000001C2 VOL: 0
+; 0000 0150             esc();
+;PCODE: $000001C3 VOL: 0
+; 0000 0151             }
+; 0000 0152 }
+;PCODE: $000001C4 VOL: 0
+;PCODE: $000001C5 VOL: 0
+;PCODE: $000001C6 VOL: 0
+;
+;//=================================================
+;void screen(void)
+; 0000 0156 {
+;PCODE: $000001C7 VOL: 0
+;PCODE: $000001C8 VOL: 0
+; 0000 0157     lcd_clear();          	// очистка ЛСД
+;PCODE: $000001C9 VOL: 0
+; 0000 0158 
+; 0000 0159     lcd_gotoxy(0,0);      	// установка курсора на 0,0
+;PCODE: $000001CA VOL: 0
+;PCODE: $000001CB VOL: 0
+;PCODE: $000001CC VOL: 0
+;PCODE: $000001CD VOL: 0
+;PCODE: $000001CE VOL: 0
+; 0000 015A     lcd_puts(lcd_str_1);
+;PCODE: $000001CF VOL: 1
+;PCODE: $000001D0 VOL: 0
+;PCODE: $000001D1 VOL: 0
+; 0000 015B 
+; 0000 015C     lcd_gotoxy(0,1);      	// установка курсора на начало второй строки
+;PCODE: $000001D2 VOL: 0
+;PCODE: $000001D3 VOL: 0
+;PCODE: $000001D4 VOL: 0
+;PCODE: $000001D5 VOL: 0
+;PCODE: $000001D6 VOL: 0
+; 0000 015D     lcd_puts(lcd_str_2);
+;PCODE: $000001D7 VOL: 1
+;PCODE: $000001D8 VOL: 0
+;PCODE: $000001D9 VOL: 0
+; 0000 015E 
+; 0000 015F 
+; 0000 0160 }
+;PCODE: $000001DA VOL: 0
+;PCODE: $000001DB VOL: 0
+;
+;//==================================================
+;void frame(void)
+; 0000 0164 {
+;PCODE: $000001DC VOL: 0
+;PCODE: $000001DD VOL: 0
+; 0000 0165     switch(regim_rabot)
+;PCODE: $000001DE VOL: 1
+;PCODE: $000001DF VOL: 0
+; 0000 0166     {
+; 0000 0167         case 1		:
+;PCODE: $000001E0 VOL: 0
+;PCODE: $000001E1 VOL: 0
+; 0000 0168             sprintf(lcd_str_1,"Koptilnya");
+;PCODE: $000001E2 VOL: 1
+;PCODE: $000001E3 VOL: 0
+;PCODE: $000001E4 VOL: 0
+;PCODE: $000001E5 VOL: 0
+;PCODE: $000001E6 VOL: 0
+;PCODE: $000001E7 VOL: 0
+;PCODE: $000001E8 VOL: 0
+;PCODE: $000001E9 VOL: 0
+;PCODE: $000001EA VOL: 0
+; 0000 0169             sprintf(lcd_str_2,"v.1.0");
+;PCODE: $000001EB VOL: 1
+;PCODE: $000001EC VOL: 0
+;PCODE: $000001ED VOL: 0
+;PCODE: $000001EE VOL: 0
+;PCODE: $000001EF VOL: 0
+;PCODE: $000001F0 VOL: 0
+;PCODE: $000001F1 VOL: 0
+;PCODE: $000001F2 VOL: 0
+;PCODE: $000001F3 VOL: 0
+; 0000 016A             delay_ms(zadergka_zastavka);
+;PCODE: $000001F4 VOL: 0
+;PCODE: $000001F5 VOL: 0
+; 0000 016B             break;
+;PCODE: $000001F6 VOL: 0
+; 0000 016C         case 11		:
+;PCODE: $000001F7 VOL: 0
+;PCODE: $000001F8 VOL: 0
+;PCODE: $000001F9 VOL: 0
+; 0000 016D             sprintf(lcd_str_1,"Max T razogreva");
+;PCODE: $000001FA VOL: 1
+;PCODE: $000001FB VOL: 0
+;PCODE: $000001FC VOL: 0
+;PCODE: $000001FD VOL: 0
+;PCODE: $000001FE VOL: 0
+;PCODE: $000001FF VOL: 0
+;PCODE: $00000200 VOL: 0
+;PCODE: $00000201 VOL: 0
+;PCODE: $00000202 VOL: 0
+; 0000 016E             sprintf(lcd_str_2,"%c%c%c",
+; 0000 016F             (t_max_razogrev/100)%10 +0x30,
+; 0000 0170             (t_max_razogrev/10)%10  +0x30,
+; 0000 0171             t_max_razogrev%10       +0x30
+; 0000 0172             );
+;PCODE: $00000203 VOL: 1
+;PCODE: $00000204 VOL: 0
+;PCODE: $00000205 VOL: 0
+;PCODE: $00000206 VOL: 0
+;PCODE: $00000207 VOL: 0
+;PCODE: $00000208 VOL: 1
+;PCODE: $00000209 VOL: 0
+;PCODE: $0000020A VOL: 0
+;PCODE: $0000020B VOL: 0
+;PCODE: $0000020C VOL: 0
+;PCODE: $0000020D VOL: 0
+;PCODE: $0000020E VOL: 0
+;PCODE: $0000020F VOL: 0
+;PCODE: $00000210 VOL: 0
+;PCODE: $00000211 VOL: 0
+;PCODE: $00000212 VOL: 1
+;PCODE: $00000213 VOL: 0
+;PCODE: $00000214 VOL: 0
+;PCODE: $00000215 VOL: 0
+;PCODE: $00000216 VOL: 0
+;PCODE: $00000217 VOL: 0
+;PCODE: $00000218 VOL: 0
+;PCODE: $00000219 VOL: 0
+;PCODE: $0000021A VOL: 0
+;PCODE: $0000021B VOL: 0
+;PCODE: $0000021C VOL: 1
+;PCODE: $0000021D VOL: 0
+;PCODE: $0000021E VOL: 0
+;PCODE: $0000021F VOL: 0
+;PCODE: $00000220 VOL: 0
+;PCODE: $00000221 VOL: 0
+;PCODE: $00000222 VOL: 0
+;PCODE: $00000223 VOL: 0
+;PCODE: $00000224 VOL: 0
+;PCODE: $00000225 VOL: 0
+;PCODE: $00000226 VOL: 0
+; 0000 0173             break;
+;PCODE: $00000227 VOL: 0
+; 0000 0174         case 12	    :
+;PCODE: $00000228 VOL: 0
+;PCODE: $00000229 VOL: 0
+;PCODE: $0000022A VOL: 0
+; 0000 0175             sprintf(lcd_str_1,"Min T razogreva");
+;PCODE: $0000022B VOL: 1
+;PCODE: $0000022C VOL: 0
+;PCODE: $0000022D VOL: 0
+;PCODE: $0000022E VOL: 0
+;PCODE: $0000022F VOL: 0
+;PCODE: $00000230 VOL: 0
+;PCODE: $00000231 VOL: 0
+;PCODE: $00000232 VOL: 0
+;PCODE: $00000233 VOL: 0
+; 0000 0176             sprintf(lcd_str_2,"%c%c%c",
+; 0000 0177             (t_min_razogrev/100)%10 +0x30,
+; 0000 0178             (t_min_razogrev/10)%10  +0x30,
+; 0000 0179             t_min_razogrev%10       +0x30
+; 0000 017A             );
+;PCODE: $00000234 VOL: 1
+;PCODE: $00000235 VOL: 0
+;PCODE: $00000236 VOL: 0
+;PCODE: $00000237 VOL: 0
+;PCODE: $00000238 VOL: 0
+;PCODE: $00000239 VOL: 1
+;PCODE: $0000023A VOL: 0
+;PCODE: $0000023B VOL: 0
+;PCODE: $0000023C VOL: 0
+;PCODE: $0000023D VOL: 0
+;PCODE: $0000023E VOL: 0
+;PCODE: $0000023F VOL: 0
+;PCODE: $00000240 VOL: 0
+;PCODE: $00000241 VOL: 0
+;PCODE: $00000242 VOL: 0
+;PCODE: $00000243 VOL: 1
+;PCODE: $00000244 VOL: 0
+;PCODE: $00000245 VOL: 0
+;PCODE: $00000246 VOL: 0
+;PCODE: $00000247 VOL: 0
+;PCODE: $00000248 VOL: 0
+;PCODE: $00000249 VOL: 0
+;PCODE: $0000024A VOL: 0
+;PCODE: $0000024B VOL: 0
+;PCODE: $0000024C VOL: 0
+;PCODE: $0000024D VOL: 1
+;PCODE: $0000024E VOL: 0
+;PCODE: $0000024F VOL: 0
+;PCODE: $00000250 VOL: 0
+;PCODE: $00000251 VOL: 0
+;PCODE: $00000252 VOL: 0
+;PCODE: $00000253 VOL: 0
+;PCODE: $00000254 VOL: 0
+;PCODE: $00000255 VOL: 0
+;PCODE: $00000256 VOL: 0
+;PCODE: $00000257 VOL: 0
+; 0000 017B             break;
+;PCODE: $00000258 VOL: 0
+; 0000 017C         case 21		:
+;PCODE: $00000259 VOL: 0
+;PCODE: $0000025A VOL: 0
+;PCODE: $0000025B VOL: 0
+; 0000 017D             sprintf(lcd_str_1,"Max T rabotia");
+;PCODE: $0000025C VOL: 1
+;PCODE: $0000025D VOL: 0
+;PCODE: $0000025E VOL: 0
+;PCODE: $0000025F VOL: 0
+;PCODE: $00000260 VOL: 0
+;PCODE: $00000261 VOL: 0
+;PCODE: $00000262 VOL: 0
+;PCODE: $00000263 VOL: 0
+;PCODE: $00000264 VOL: 0
+; 0000 017E             sprintf(lcd_str_2,"%c%c%c",
+; 0000 017F             (t_max_rabochee/100)%10 +0x30,
+; 0000 0180             (t_max_rabochee/10)%10  +0x30,
+; 0000 0181             t_max_rabochee%10       +0x30
+; 0000 0182             );
+;PCODE: $00000265 VOL: 1
+;PCODE: $00000266 VOL: 0
+;PCODE: $00000267 VOL: 0
+;PCODE: $00000268 VOL: 0
+;PCODE: $00000269 VOL: 0
+;PCODE: $0000026A VOL: 1
+;PCODE: $0000026B VOL: 0
+;PCODE: $0000026C VOL: 0
+;PCODE: $0000026D VOL: 0
+;PCODE: $0000026E VOL: 0
+;PCODE: $0000026F VOL: 0
+;PCODE: $00000270 VOL: 0
+;PCODE: $00000271 VOL: 0
+;PCODE: $00000272 VOL: 0
+;PCODE: $00000273 VOL: 0
+;PCODE: $00000274 VOL: 1
+;PCODE: $00000275 VOL: 0
+;PCODE: $00000276 VOL: 0
+;PCODE: $00000277 VOL: 0
+;PCODE: $00000278 VOL: 0
+;PCODE: $00000279 VOL: 0
+;PCODE: $0000027A VOL: 0
+;PCODE: $0000027B VOL: 0
+;PCODE: $0000027C VOL: 0
+;PCODE: $0000027D VOL: 0
+;PCODE: $0000027E VOL: 1
+;PCODE: $0000027F VOL: 0
+;PCODE: $00000280 VOL: 0
+;PCODE: $00000281 VOL: 0
+;PCODE: $00000282 VOL: 0
+;PCODE: $00000283 VOL: 0
+;PCODE: $00000284 VOL: 0
+;PCODE: $00000285 VOL: 0
+;PCODE: $00000286 VOL: 0
+;PCODE: $00000287 VOL: 0
+;PCODE: $00000288 VOL: 0
+; 0000 0183             break;
+;PCODE: $00000289 VOL: 0
+; 0000 0184         case 22		:
+;PCODE: $0000028A VOL: 0
+;PCODE: $0000028B VOL: 0
+;PCODE: $0000028C VOL: 0
+; 0000 0185             sprintf(lcd_str_1,"Min T raboti");
+;PCODE: $0000028D VOL: 1
+;PCODE: $0000028E VOL: 0
+;PCODE: $0000028F VOL: 0
+;PCODE: $00000290 VOL: 0
+;PCODE: $00000291 VOL: 0
+;PCODE: $00000292 VOL: 0
+;PCODE: $00000293 VOL: 0
+;PCODE: $00000294 VOL: 0
+;PCODE: $00000295 VOL: 0
+; 0000 0186             sprintf(lcd_str_2,"%c%c%c",
+; 0000 0187             (t_min_rabochee/100)%10 +0x30,
+; 0000 0188             (t_min_rabochee/10)%10  +0x30,
+; 0000 0189             t_min_rabochee%10       +0x30
+; 0000 018A             );
+;PCODE: $00000296 VOL: 1
+;PCODE: $00000297 VOL: 0
+;PCODE: $00000298 VOL: 0
+;PCODE: $00000299 VOL: 0
+;PCODE: $0000029A VOL: 0
+;PCODE: $0000029B VOL: 1
+;PCODE: $0000029C VOL: 0
+;PCODE: $0000029D VOL: 0
+;PCODE: $0000029E VOL: 0
+;PCODE: $0000029F VOL: 0
+;PCODE: $000002A0 VOL: 0
+;PCODE: $000002A1 VOL: 0
+;PCODE: $000002A2 VOL: 0
+;PCODE: $000002A3 VOL: 0
+;PCODE: $000002A4 VOL: 0
+;PCODE: $000002A5 VOL: 1
+;PCODE: $000002A6 VOL: 0
+;PCODE: $000002A7 VOL: 0
+;PCODE: $000002A8 VOL: 0
+;PCODE: $000002A9 VOL: 0
+;PCODE: $000002AA VOL: 0
+;PCODE: $000002AB VOL: 0
+;PCODE: $000002AC VOL: 0
+;PCODE: $000002AD VOL: 0
+;PCODE: $000002AE VOL: 0
+;PCODE: $000002AF VOL: 1
+;PCODE: $000002B0 VOL: 0
+;PCODE: $000002B1 VOL: 0
+;PCODE: $000002B2 VOL: 0
+;PCODE: $000002B3 VOL: 0
+;PCODE: $000002B4 VOL: 0
+;PCODE: $000002B5 VOL: 0
+;PCODE: $000002B6 VOL: 0
+;PCODE: $000002B7 VOL: 0
+;PCODE: $000002B8 VOL: 0
+;PCODE: $000002B9 VOL: 0
+; 0000 018B             break;
+;PCODE: $000002BA VOL: 0
+; 0000 018C         case 31		:
+;PCODE: $000002BB VOL: 0
+;PCODE: $000002BC VOL: 0
+;PCODE: $000002BD VOL: 0
+; 0000 018D             sprintf(lcd_str_1,"Time rabota, ch");
+;PCODE: $000002BE VOL: 1
+;PCODE: $000002BF VOL: 0
+;PCODE: $000002C0 VOL: 0
+;PCODE: $000002C1 VOL: 0
+;PCODE: $000002C2 VOL: 0
+;PCODE: $000002C3 VOL: 0
+;PCODE: $000002C4 VOL: 0
+;PCODE: $000002C5 VOL: 0
+;PCODE: $000002C6 VOL: 0
+; 0000 018E             sprintf(lcd_str_2,"%c%c",
+; 0000 018F             (time_rabota_ch/10)%10  +0x30,
+; 0000 0190             time_rabota_ch%10       +0x30
+; 0000 0191             );
+;PCODE: $000002C7 VOL: 1
+;PCODE: $000002C8 VOL: 0
+;PCODE: $000002C9 VOL: 0
+;PCODE: $000002CA VOL: 0
+;PCODE: $000002CB VOL: 0
+;PCODE: $000002CC VOL: 1
+;PCODE: $000002CD VOL: 0
+;PCODE: $000002CE VOL: 0
+;PCODE: $000002CF VOL: 0
+;PCODE: $000002D0 VOL: 0
+;PCODE: $000002D1 VOL: 0
+;PCODE: $000002D2 VOL: 0
+;PCODE: $000002D3 VOL: 0
+;PCODE: $000002D4 VOL: 0
+;PCODE: $000002D5 VOL: 0
+;PCODE: $000002D6 VOL: 1
+;PCODE: $000002D7 VOL: 0
+;PCODE: $000002D8 VOL: 0
+;PCODE: $000002D9 VOL: 0
+;PCODE: $000002DA VOL: 0
+;PCODE: $000002DB VOL: 0
+;PCODE: $000002DC VOL: 0
+;PCODE: $000002DD VOL: 0
+;PCODE: $000002DE VOL: 0
+;PCODE: $000002DF VOL: 0
+;PCODE: $000002E0 VOL: 0
+; 0000 0192             break;
+;PCODE: $000002E1 VOL: 0
+; 0000 0193         case 32		:
+;PCODE: $000002E2 VOL: 0
+;PCODE: $000002E3 VOL: 0
+;PCODE: $000002E4 VOL: 0
+; 0000 0194             sprintf(lcd_str_1,"Time rabota, min");
+;PCODE: $000002E5 VOL: 1
+;PCODE: $000002E6 VOL: 0
+;PCODE: $000002E7 VOL: 0
+;PCODE: $000002E8 VOL: 0
+;PCODE: $000002E9 VOL: 0
+;PCODE: $000002EA VOL: 0
+;PCODE: $000002EB VOL: 0
+;PCODE: $000002EC VOL: 0
+;PCODE: $000002ED VOL: 0
+; 0000 0195             sprintf(lcd_str_2,"%c%c",
+; 0000 0196             (time_rabota_min/10)%10 +0x30,
+; 0000 0197             time_rabota_min%10      +0x30
+; 0000 0198             );
+;PCODE: $000002EE VOL: 1
+;PCODE: $000002EF VOL: 0
+;PCODE: $000002F0 VOL: 0
+;PCODE: $000002F1 VOL: 0
+;PCODE: $000002F2 VOL: 0
+;PCODE: $000002F3 VOL: 1
+;PCODE: $000002F4 VOL: 0
+;PCODE: $000002F5 VOL: 0
+;PCODE: $000002F6 VOL: 0
+;PCODE: $000002F7 VOL: 0
+;PCODE: $000002F8 VOL: 0
+;PCODE: $000002F9 VOL: 0
+;PCODE: $000002FA VOL: 0
+;PCODE: $000002FB VOL: 0
+;PCODE: $000002FC VOL: 0
+;PCODE: $000002FD VOL: 1
+;PCODE: $000002FE VOL: 0
+;PCODE: $000002FF VOL: 0
+;PCODE: $00000300 VOL: 0
+;PCODE: $00000301 VOL: 0
+;PCODE: $00000302 VOL: 0
+;PCODE: $00000303 VOL: 0
+;PCODE: $00000304 VOL: 0
+;PCODE: $00000305 VOL: 0
+;PCODE: $00000306 VOL: 0
+;PCODE: $00000307 VOL: 0
+; 0000 0199             break;
+;PCODE: $00000308 VOL: 0
+; 0000 019A         case 41		:
+;PCODE: $00000309 VOL: 0
+;PCODE: $0000030A VOL: 0
+;PCODE: $0000030B VOL: 0
+; 0000 019B             sprintf(lcd_str_1,"Time smoke, ch");
+;PCODE: $0000030C VOL: 1
+;PCODE: $0000030D VOL: 0
+;PCODE: $0000030E VOL: 0
+;PCODE: $0000030F VOL: 0
+;PCODE: $00000310 VOL: 0
+;PCODE: $00000311 VOL: 0
+;PCODE: $00000312 VOL: 0
+;PCODE: $00000313 VOL: 0
+;PCODE: $00000314 VOL: 0
+; 0000 019C             sprintf(lcd_str_2,"%c%c",
+; 0000 019D             (time_smoke_ch/10)%10   +0x30,
+; 0000 019E             time_smoke_ch%10        +0x30
+; 0000 019F             );
+;PCODE: $00000315 VOL: 1
+;PCODE: $00000316 VOL: 0
+;PCODE: $00000317 VOL: 0
+;PCODE: $00000318 VOL: 0
+;PCODE: $00000319 VOL: 0
+;PCODE: $0000031A VOL: 1
+;PCODE: $0000031B VOL: 0
+;PCODE: $0000031C VOL: 0
+;PCODE: $0000031D VOL: 0
+;PCODE: $0000031E VOL: 0
+;PCODE: $0000031F VOL: 0
+;PCODE: $00000320 VOL: 0
+;PCODE: $00000321 VOL: 0
+;PCODE: $00000322 VOL: 0
+;PCODE: $00000323 VOL: 0
+;PCODE: $00000324 VOL: 1
+;PCODE: $00000325 VOL: 0
+;PCODE: $00000326 VOL: 0
+;PCODE: $00000327 VOL: 0
+;PCODE: $00000328 VOL: 0
+;PCODE: $00000329 VOL: 0
+;PCODE: $0000032A VOL: 0
+;PCODE: $0000032B VOL: 0
+;PCODE: $0000032C VOL: 0
+;PCODE: $0000032D VOL: 0
+;PCODE: $0000032E VOL: 0
+; 0000 01A0             break;
+;PCODE: $0000032F VOL: 0
+; 0000 01A1         case 42		:
+;PCODE: $00000330 VOL: 0
+;PCODE: $00000331 VOL: 0
+;PCODE: $00000332 VOL: 0
+; 0000 01A2             sprintf(lcd_str_1,"Time smoke, min");
+;PCODE: $00000333 VOL: 1
+;PCODE: $00000334 VOL: 0
+;PCODE: $00000335 VOL: 0
+;PCODE: $00000336 VOL: 0
+;PCODE: $00000337 VOL: 0
+;PCODE: $00000338 VOL: 0
+;PCODE: $00000339 VOL: 0
+;PCODE: $0000033A VOL: 0
+;PCODE: $0000033B VOL: 0
+; 0000 01A3             sprintf(lcd_str_2,"%c%c",
+; 0000 01A4             (time_smoke_min/10)%10  +0x30,
+; 0000 01A5             time_smoke_min%10       +0x30
+; 0000 01A6             );
+;PCODE: $0000033C VOL: 1
+;PCODE: $0000033D VOL: 0
+;PCODE: $0000033E VOL: 0
+;PCODE: $0000033F VOL: 0
+;PCODE: $00000340 VOL: 0
+;PCODE: $00000341 VOL: 1
+;PCODE: $00000342 VOL: 0
+;PCODE: $00000343 VOL: 0
+;PCODE: $00000344 VOL: 0
+;PCODE: $00000345 VOL: 0
+;PCODE: $00000346 VOL: 0
+;PCODE: $00000347 VOL: 0
+;PCODE: $00000348 VOL: 0
+;PCODE: $00000349 VOL: 0
+;PCODE: $0000034A VOL: 0
+;PCODE: $0000034B VOL: 1
+;PCODE: $0000034C VOL: 0
+;PCODE: $0000034D VOL: 0
+;PCODE: $0000034E VOL: 0
+;PCODE: $0000034F VOL: 0
+;PCODE: $00000350 VOL: 0
+;PCODE: $00000351 VOL: 0
+;PCODE: $00000352 VOL: 0
+;PCODE: $00000353 VOL: 0
+;PCODE: $00000354 VOL: 0
+;PCODE: $00000355 VOL: 0
+; 0000 01A7             break;
+;PCODE: $00000356 VOL: 0
+; 0000 01A8         case 60		:
+;PCODE: $00000357 VOL: 0
+;PCODE: $00000358 VOL: 0
+;PCODE: $00000359 VOL: 0
+; 0000 01A9 //#pragma rl+
+; 0000 01AA             sprintf(lcd_str_1,"RAZOGREVРазогрев");
+;PCODE: $0000035A VOL: 1
+;PCODE: $0000035B VOL: 0
+;PCODE: $0000035C VOL: 0
+;PCODE: $0000035D VOL: 0
+;PCODE: $0000035E VOL: 0
+;PCODE: $0000035F VOL: 0
+;PCODE: $00000360 VOL: 0
+;PCODE: $00000361 VOL: 0
+;PCODE: $00000362 VOL: 0
+; 0000 01AB             sprintf(lcd_str_2,"%c%c:%c%c:%c%c T=%c%c%c C",
+; 0000 01AC //#pragma rl-
+; 0000 01AD 
+; 0000 01AE             (real_time_ch/10)%10	+0x30,
+; 0000 01AF             real_time_ch%10		    +0x30,
+; 0000 01B0             (real_time_min/10)%10	+0x30,
+; 0000 01B1             real_time_min%10		+0x30,
+; 0000 01B2             (real_time_sek/10)%10	+0x30,
+; 0000 01B3             real_time_sek%10		+0x30,
+; 0000 01B4 
+; 0000 01B5             real_temp_1razryad,
+; 0000 01B6             real_temp_2razryad,
+; 0000 01B7             real_temp_3razryad
+; 0000 01B8             );
+;PCODE: $00000363 VOL: 1
+;PCODE: $00000364 VOL: 0
+;PCODE: $00000365 VOL: 0
+;PCODE: $00000366 VOL: 0
+;PCODE: $00000367 VOL: 0
+;PCODE: $00000368 VOL: 1
+;PCODE: $00000369 VOL: 0
+;PCODE: $0000036A VOL: 0
+;PCODE: $0000036B VOL: 0
+;PCODE: $0000036C VOL: 0
+;PCODE: $0000036D VOL: 0
+;PCODE: $0000036E VOL: 0
+;PCODE: $0000036F VOL: 0
+;PCODE: $00000370 VOL: 0
+;PCODE: $00000371 VOL: 0
+;PCODE: $00000372 VOL: 1
+;PCODE: $00000373 VOL: 0
+;PCODE: $00000374 VOL: 0
+;PCODE: $00000375 VOL: 0
+;PCODE: $00000376 VOL: 0
+;PCODE: $00000377 VOL: 0
+;PCODE: $00000378 VOL: 0
+;PCODE: $00000379 VOL: 1
+;PCODE: $0000037A VOL: 0
+;PCODE: $0000037B VOL: 0
+;PCODE: $0000037C VOL: 0
+;PCODE: $0000037D VOL: 0
+;PCODE: $0000037E VOL: 0
+;PCODE: $0000037F VOL: 0
+;PCODE: $00000380 VOL: 0
+;PCODE: $00000381 VOL: 0
+;PCODE: $00000382 VOL: 0
+;PCODE: $00000383 VOL: 1
+;PCODE: $00000384 VOL: 0
+;PCODE: $00000385 VOL: 0
+;PCODE: $00000386 VOL: 0
+;PCODE: $00000387 VOL: 0
+;PCODE: $00000388 VOL: 0
+;PCODE: $00000389 VOL: 0
+;PCODE: $0000038A VOL: 1
+;PCODE: $0000038B VOL: 0
+;PCODE: $0000038C VOL: 0
+;PCODE: $0000038D VOL: 0
+;PCODE: $0000038E VOL: 0
+;PCODE: $0000038F VOL: 0
+;PCODE: $00000390 VOL: 0
+;PCODE: $00000391 VOL: 0
+;PCODE: $00000392 VOL: 0
+;PCODE: $00000393 VOL: 0
+;PCODE: $00000394 VOL: 1
+;PCODE: $00000395 VOL: 0
+;PCODE: $00000396 VOL: 0
+;PCODE: $00000397 VOL: 0
+;PCODE: $00000398 VOL: 0
+;PCODE: $00000399 VOL: 0
+;PCODE: $0000039A VOL: 0
+;PCODE: $0000039B VOL: 1
+;PCODE: $0000039C VOL: 0
+;PCODE: $0000039D VOL: 0
+;PCODE: $0000039E VOL: 1
+;PCODE: $0000039F VOL: 0
+;PCODE: $000003A0 VOL: 0
+;PCODE: $000003A1 VOL: 1
+;PCODE: $000003A2 VOL: 0
+;PCODE: $000003A3 VOL: 0
+;PCODE: $000003A4 VOL: 0
+;PCODE: $000003A5 VOL: 0
+;PCODE: $000003A6 VOL: 0
+;PCODE: $000003A7 VOL: 0
+; 0000 01B9             break;
+;PCODE: $000003A8 VOL: 0
+; 0000 01BA         case 70		:
+;PCODE: $000003A9 VOL: 0
+;PCODE: $000003AA VOL: 0
+;PCODE: $000003AB VOL: 0
+; 0000 01BB             sprintf(lcd_str_1,"RABOTA");
+;PCODE: $000003AC VOL: 1
+;PCODE: $000003AD VOL: 0
+;PCODE: $000003AE VOL: 0
+;PCODE: $000003AF VOL: 0
+;PCODE: $000003B0 VOL: 0
+;PCODE: $000003B1 VOL: 0
+;PCODE: $000003B2 VOL: 0
+;PCODE: $000003B3 VOL: 0
+;PCODE: $000003B4 VOL: 0
+; 0000 01BC             sprintf(lcd_str_2,"%c%c:%c%c:%c%c T=%c%c%c C",
+; 0000 01BD             (real_time_ch/10)%10	+0x30,
+; 0000 01BE             real_time_ch%10             +0x30,
+; 0000 01BF             (real_time_min/10)%10	+0x30,
+; 0000 01C0             real_time_min%10		+0x30,
+; 0000 01C1             (real_time_sek/10)%10	+0x30,
+; 0000 01C2             real_time_sek%10		+0x30,
+; 0000 01C3 
+; 0000 01C4             real_temp_1razryad,
+; 0000 01C5             real_temp_2razryad,
+; 0000 01C6             real_temp_3razryad
+; 0000 01C7             );
+;PCODE: $000003B5 VOL: 1
+;PCODE: $000003B6 VOL: 0
+;PCODE: $000003B7 VOL: 0
+;PCODE: $000003B8 VOL: 0
+;PCODE: $000003B9 VOL: 0
+;PCODE: $000003BA VOL: 1
+;PCODE: $000003BB VOL: 0
+;PCODE: $000003BC VOL: 0
+;PCODE: $000003BD VOL: 0
+;PCODE: $000003BE VOL: 0
+;PCODE: $000003BF VOL: 0
+;PCODE: $000003C0 VOL: 0
+;PCODE: $000003C1 VOL: 0
+;PCODE: $000003C2 VOL: 0
+;PCODE: $000003C3 VOL: 0
+;PCODE: $000003C4 VOL: 1
+;PCODE: $000003C5 VOL: 0
+;PCODE: $000003C6 VOL: 0
+;PCODE: $000003C7 VOL: 0
+;PCODE: $000003C8 VOL: 0
+;PCODE: $000003C9 VOL: 0
+;PCODE: $000003CA VOL: 0
+;PCODE: $000003CB VOL: 1
+;PCODE: $000003CC VOL: 0
+;PCODE: $000003CD VOL: 0
+;PCODE: $000003CE VOL: 0
+;PCODE: $000003CF VOL: 0
+;PCODE: $000003D0 VOL: 0
+;PCODE: $000003D1 VOL: 0
+;PCODE: $000003D2 VOL: 0
+;PCODE: $000003D3 VOL: 0
+;PCODE: $000003D4 VOL: 0
+;PCODE: $000003D5 VOL: 1
+;PCODE: $000003D6 VOL: 0
+;PCODE: $000003D7 VOL: 0
+;PCODE: $000003D8 VOL: 0
+;PCODE: $000003D9 VOL: 0
+;PCODE: $000003DA VOL: 0
+;PCODE: $000003DB VOL: 0
+;PCODE: $000003DC VOL: 1
+;PCODE: $000003DD VOL: 0
+;PCODE: $000003DE VOL: 0
+;PCODE: $000003DF VOL: 0
+;PCODE: $000003E0 VOL: 0
+;PCODE: $000003E1 VOL: 0
+;PCODE: $000003E2 VOL: 0
+;PCODE: $000003E3 VOL: 0
+;PCODE: $000003E4 VOL: 0
+;PCODE: $000003E5 VOL: 0
+;PCODE: $000003E6 VOL: 1
+;PCODE: $000003E7 VOL: 0
+;PCODE: $000003E8 VOL: 0
+;PCODE: $000003E9 VOL: 0
+;PCODE: $000003EA VOL: 0
+;PCODE: $000003EB VOL: 0
+;PCODE: $000003EC VOL: 0
+;PCODE: $000003ED VOL: 1
+;PCODE: $000003EE VOL: 0
+;PCODE: $000003EF VOL: 0
+;PCODE: $000003F0 VOL: 1
+;PCODE: $000003F1 VOL: 0
+;PCODE: $000003F2 VOL: 0
+;PCODE: $000003F3 VOL: 1
+;PCODE: $000003F4 VOL: 0
+;PCODE: $000003F5 VOL: 0
+;PCODE: $000003F6 VOL: 0
+;PCODE: $000003F7 VOL: 0
+;PCODE: $000003F8 VOL: 0
+;PCODE: $000003F9 VOL: 0
+; 0000 01C8             break;
+;PCODE: $000003FA VOL: 0
+; 0000 01C9         case 80		:
+;PCODE: $000003FB VOL: 0
+;PCODE: $000003FC VOL: 0
+;PCODE: $000003FD VOL: 0
+; 0000 01CA             sprintf(lcd_str_1,"SMOKE");
+;PCODE: $000003FE VOL: 1
+;PCODE: $000003FF VOL: 0
+;PCODE: $00000400 VOL: 0
+;PCODE: $00000401 VOL: 0
+;PCODE: $00000402 VOL: 0
+;PCODE: $00000403 VOL: 0
+;PCODE: $00000404 VOL: 0
+;PCODE: $00000405 VOL: 0
+;PCODE: $00000406 VOL: 0
+; 0000 01CB             sprintf(lcd_str_2,"%c%c:%c%c:%c%c T=%c%c%c C",
+; 0000 01CC             (real_time_ch/10)%10	+0x30,
+; 0000 01CD             real_time_ch%10             +0x30,
+; 0000 01CE             (real_time_min/10)%10	+0x30,
+; 0000 01CF             real_time_min%10		+0x30,
+; 0000 01D0             (real_time_sek/10)%10	+0x30,
+; 0000 01D1             real_time_sek%10		+0x30,
+; 0000 01D2 
+; 0000 01D3             real_temp_1razryad,
+; 0000 01D4             real_temp_2razryad,
+; 0000 01D5             real_temp_3razryad
+; 0000 01D6             );
+;PCODE: $00000407 VOL: 1
+;PCODE: $00000408 VOL: 0
+;PCODE: $00000409 VOL: 0
+;PCODE: $0000040A VOL: 0
+;PCODE: $0000040B VOL: 0
+;PCODE: $0000040C VOL: 1
+;PCODE: $0000040D VOL: 0
+;PCODE: $0000040E VOL: 0
+;PCODE: $0000040F VOL: 0
+;PCODE: $00000410 VOL: 0
+;PCODE: $00000411 VOL: 0
+;PCODE: $00000412 VOL: 0
+;PCODE: $00000413 VOL: 0
+;PCODE: $00000414 VOL: 0
+;PCODE: $00000415 VOL: 0
+;PCODE: $00000416 VOL: 1
+;PCODE: $00000417 VOL: 0
+;PCODE: $00000418 VOL: 0
+;PCODE: $00000419 VOL: 0
+;PCODE: $0000041A VOL: 0
+;PCODE: $0000041B VOL: 0
+;PCODE: $0000041C VOL: 0
+;PCODE: $0000041D VOL: 1
+;PCODE: $0000041E VOL: 0
+;PCODE: $0000041F VOL: 0
+;PCODE: $00000420 VOL: 0
+;PCODE: $00000421 VOL: 0
+;PCODE: $00000422 VOL: 0
+;PCODE: $00000423 VOL: 0
+;PCODE: $00000424 VOL: 0
+;PCODE: $00000425 VOL: 0
+;PCODE: $00000426 VOL: 0
+;PCODE: $00000427 VOL: 1
+;PCODE: $00000428 VOL: 0
+;PCODE: $00000429 VOL: 0
+;PCODE: $0000042A VOL: 0
+;PCODE: $0000042B VOL: 0
+;PCODE: $0000042C VOL: 0
+;PCODE: $0000042D VOL: 0
+;PCODE: $0000042E VOL: 1
+;PCODE: $0000042F VOL: 0
+;PCODE: $00000430 VOL: 0
+;PCODE: $00000431 VOL: 0
+;PCODE: $00000432 VOL: 0
+;PCODE: $00000433 VOL: 0
+;PCODE: $00000434 VOL: 0
+;PCODE: $00000435 VOL: 0
+;PCODE: $00000436 VOL: 0
+;PCODE: $00000437 VOL: 0
+;PCODE: $00000438 VOL: 1
+;PCODE: $00000439 VOL: 0
+;PCODE: $0000043A VOL: 0
+;PCODE: $0000043B VOL: 0
+;PCODE: $0000043C VOL: 0
+;PCODE: $0000043D VOL: 0
+;PCODE: $0000043E VOL: 0
+;PCODE: $0000043F VOL: 1
+;PCODE: $00000440 VOL: 0
+;PCODE: $00000441 VOL: 0
+;PCODE: $00000442 VOL: 1
+;PCODE: $00000443 VOL: 0
+;PCODE: $00000444 VOL: 0
+;PCODE: $00000445 VOL: 1
+;PCODE: $00000446 VOL: 0
+;PCODE: $00000447 VOL: 0
+;PCODE: $00000448 VOL: 0
+;PCODE: $00000449 VOL: 0
+;PCODE: $0000044A VOL: 0
+;PCODE: $0000044B VOL: 0
+; 0000 01D7             break;
+;PCODE: $0000044C VOL: 0
+; 0000 01D8         case 100	:
+;PCODE: $0000044D VOL: 0
+;PCODE: $0000044E VOL: 0
+;PCODE: $0000044F VOL: 0
+; 0000 01D9             sprintf(lcd_str_1,"STOP");
+;PCODE: $00000450 VOL: 1
+;PCODE: $00000451 VOL: 0
+;PCODE: $00000452 VOL: 0
+;PCODE: $00000453 VOL: 0
+;PCODE: $00000454 VOL: 0
+;PCODE: $00000455 VOL: 0
+;PCODE: $00000456 VOL: 0
+;PCODE: $00000457 VOL: 0
+;PCODE: $00000458 VOL: 0
+; 0000 01DA             sprintf(lcd_str_2,"%c%c:%c%c:%c%c T=%c%c%c C",
+; 0000 01DB             (real_time_ch/10)%10	+0x30,
+; 0000 01DC             real_time_ch%10             +0x30,
+; 0000 01DD             (real_time_min/10)%10	+0x30,
+; 0000 01DE             real_time_min%10		+0x30,
+; 0000 01DF             (real_time_sek/10)%10	+0x30,
+; 0000 01E0             real_time_sek%10		+0x30,
+; 0000 01E1 
+; 0000 01E2             real_temp_1razryad,
+; 0000 01E3             real_temp_2razryad,
+; 0000 01E4             real_temp_3razryad
+; 0000 01E5             );
+;PCODE: $00000459 VOL: 1
+;PCODE: $0000045A VOL: 0
+;PCODE: $0000045B VOL: 0
+;PCODE: $0000045C VOL: 0
+;PCODE: $0000045D VOL: 0
+;PCODE: $0000045E VOL: 1
+;PCODE: $0000045F VOL: 0
+;PCODE: $00000460 VOL: 0
+;PCODE: $00000461 VOL: 0
+;PCODE: $00000462 VOL: 0
+;PCODE: $00000463 VOL: 0
+;PCODE: $00000464 VOL: 0
+;PCODE: $00000465 VOL: 0
+;PCODE: $00000466 VOL: 0
+;PCODE: $00000467 VOL: 0
+;PCODE: $00000468 VOL: 1
+;PCODE: $00000469 VOL: 0
+;PCODE: $0000046A VOL: 0
+;PCODE: $0000046B VOL: 0
+;PCODE: $0000046C VOL: 0
+;PCODE: $0000046D VOL: 0
+;PCODE: $0000046E VOL: 0
+;PCODE: $0000046F VOL: 1
+;PCODE: $00000470 VOL: 0
+;PCODE: $00000471 VOL: 0
+;PCODE: $00000472 VOL: 0
+;PCODE: $00000473 VOL: 0
+;PCODE: $00000474 VOL: 0
+;PCODE: $00000475 VOL: 0
+;PCODE: $00000476 VOL: 0
+;PCODE: $00000477 VOL: 0
+;PCODE: $00000478 VOL: 0
+;PCODE: $00000479 VOL: 1
+;PCODE: $0000047A VOL: 0
+;PCODE: $0000047B VOL: 0
+;PCODE: $0000047C VOL: 0
+;PCODE: $0000047D VOL: 0
+;PCODE: $0000047E VOL: 0
+;PCODE: $0000047F VOL: 0
+;PCODE: $00000480 VOL: 1
+;PCODE: $00000481 VOL: 0
+;PCODE: $00000482 VOL: 0
+;PCODE: $00000483 VOL: 0
+;PCODE: $00000484 VOL: 0
+;PCODE: $00000485 VOL: 0
+;PCODE: $00000486 VOL: 0
+;PCODE: $00000487 VOL: 0
+;PCODE: $00000488 VOL: 0
+;PCODE: $00000489 VOL: 0
+;PCODE: $0000048A VOL: 1
+;PCODE: $0000048B VOL: 0
+;PCODE: $0000048C VOL: 0
+;PCODE: $0000048D VOL: 0
+;PCODE: $0000048E VOL: 0
+;PCODE: $0000048F VOL: 0
+;PCODE: $00000490 VOL: 0
+;PCODE: $00000491 VOL: 1
+;PCODE: $00000492 VOL: 0
+;PCODE: $00000493 VOL: 0
+;PCODE: $00000494 VOL: 1
+;PCODE: $00000495 VOL: 0
+;PCODE: $00000496 VOL: 0
+;PCODE: $00000497 VOL: 1
+;PCODE: $00000498 VOL: 0
+;PCODE: $00000499 VOL: 0
+;PCODE: $0000049A VOL: 0
+;PCODE: $0000049B VOL: 0
+;PCODE: $0000049C VOL: 0
+;PCODE: $0000049D VOL: 0
+; 0000 01E6             break;
+;PCODE: $0000049E VOL: 0
+; 0000 01E7 
+; 0000 01E8         default	    :
+;PCODE: $0000049F VOL: 0
+; 0000 01E9             lcd_putsf("www.xxx.ua");
+;PCODE: $000004A0 VOL: 0
+;PCODE: $000004A1 VOL: 0
+;PCODE: $000004A2 VOL: 0
+;PCODE: $000004A3 VOL: 0
+; 0000 01EA             delay_ms(10);
+;PCODE: $000004A4 VOL: 0
+;PCODE: $000004A5 VOL: 0
+;PCODE: $000004A6 VOL: 0
+; 0000 01EB             break;
+;PCODE: $000004A7 VOL: 0
+; 0000 01EC     }
+;PCODE: $000004A8 VOL: 0
+; 0000 01ED }
+;PCODE: $000004A9 VOL: 0
+;PCODE: $000004AA VOL: 0
+;//=================================================
+;void regim(void)
+; 0000 01F0 {
+;PCODE: $000004AB VOL: 0
+;PCODE: $000004AC VOL: 0
+; 0000 01F1 
+; 0000 01F2 //       regim_rabot_old = regim_rabot;
+; 0000 01F3 
+; 0000 01F4         switch(regim_rabot)
+;PCODE: $000004AD VOL: 1
+;PCODE: $000004AE VOL: 0
+; 0000 01F5         {
+; 0000 01F6         case 1		:
+;PCODE: $000004AF VOL: 0
+;PCODE: $000004B0 VOL: 0
+; 0000 01F7                 blok_lamp_1_OFF         ;
+;PCODE: $000004B1 VOL: 0
+;PCODE: $000004B2 VOL: 0
+; 0000 01F8                 blok_lamp_2_OFF         ;
+;PCODE: $000004B3 VOL: 0
+;PCODE: $000004B4 VOL: 0
+; 0000 01F9                 blok_lamp_3_OFF         ;
+;PCODE: $000004B5 VOL: 0
+;PCODE: $000004B6 VOL: 0
+; 0000 01FA                 blok_lamp_en_OFF        ;
+;PCODE: $000004B7 VOL: 0
+;PCODE: $000004B8 VOL: 0
+; 0000 01FB                 blok_lamp_dis_OFF       ;
+;PCODE: $000004B9 VOL: 0
+;PCODE: $000004BA VOL: 0
+; 0000 01FC                 blok_silovoy_en_OFF     ;
+;PCODE: $000004BB VOL: 0
+;PCODE: $000004BC VOL: 0
+; 0000 01FD                 blok_silovoy_dis_OFF    ;
+;PCODE: $000004BD VOL: 0
+;PCODE: $000004BE VOL: 0
+; 0000 01FE                 blok_rezerv_OFF         ;
+;PCODE: $000004BF VOL: 0
+;PCODE: $000004C0 VOL: 0
+; 0000 01FF             break;
+;PCODE: $000004C1 VOL: 0
+; 0000 0200         case 11		:
+;PCODE: $000004C2 VOL: 0
+;PCODE: $000004C3 VOL: 0
+;PCODE: $000004C4 VOL: 0
+; 0000 0201             if (regim_rabot_old==(60||70||80||100))
+;PCODE: $000004C5 VOL: 0
+;PCODE: $000004C6 VOL: 0
+;PCODE: $000004C7 VOL: 0
+;PCODE: $000004C8 VOL: 0
+;PCODE: $000004C9 VOL: 0
+;PCODE: $000004CA VOL: 0
+;PCODE: $000004CB VOL: 0
+;PCODE: $000004CC VOL: 0
+;PCODE: $000004CD VOL: 0
+;PCODE: $000004CE VOL: 0
+;PCODE: $000004CF VOL: 0
+;PCODE: $000004D0 VOL: 0
+;PCODE: $000004D1 VOL: 0
+;PCODE: $000004D2 VOL: 0
+;PCODE: $000004D3 VOL: 0
+;PCODE: $000004D4 VOL: 0
+;PCODE: $000004D5 VOL: 0
+;PCODE: $000004D6 VOL: 1
+;PCODE: $000004D7 VOL: 0
+;PCODE: $000004D8 VOL: 0
+;PCODE: $000004D9 VOL: 0
+;PCODE: $000004DA VOL: 0
+; 0000 0202             {
+; 0000 0203                 blok_lamp_1_OFF         ;
+;PCODE: $000004DB VOL: 0
+;PCODE: $000004DC VOL: 0
+; 0000 0204                 blok_lamp_2_OFF         ;
+;PCODE: $000004DD VOL: 0
+;PCODE: $000004DE VOL: 0
+; 0000 0205                 blok_lamp_3_OFF         ;
+;PCODE: $000004DF VOL: 0
+;PCODE: $000004E0 VOL: 0
+; 0000 0206                 blok_lamp_en_OFF        ;
+;PCODE: $000004E1 VOL: 0
+;PCODE: $000004E2 VOL: 0
+; 0000 0207                 blok_lamp_dis_OFF       ;
+;PCODE: $000004E3 VOL: 0
+;PCODE: $000004E4 VOL: 0
+; 0000 0208                 blok_silovoy_en_OFF     ;
+;PCODE: $000004E5 VOL: 0
+;PCODE: $000004E6 VOL: 0
+; 0000 0209                 blok_silovoy_dis_OFF    ;
+;PCODE: $000004E7 VOL: 0
+;PCODE: $000004E8 VOL: 0
+; 0000 020A                 blok_rezerv_OFF         ;
+;PCODE: $000004E9 VOL: 0
+;PCODE: $000004EA VOL: 0
+; 0000 020B             }
+; 0000 020C             break;
+;PCODE: $000004EB VOL: 0
+;PCODE: $000004EC VOL: 0
+; 0000 020D         case 12         :
+;PCODE: $000004ED VOL: 0
+;PCODE: $000004EE VOL: 0
+;PCODE: $000004EF VOL: 0
+; 0000 020E             if (regim_rabot_old==(60||70||80||100))
+;PCODE: $000004F0 VOL: 0
+;PCODE: $000004F1 VOL: 0
+;PCODE: $000004F2 VOL: 0
+;PCODE: $000004F3 VOL: 0
+;PCODE: $000004F4 VOL: 0
+;PCODE: $000004F5 VOL: 0
+;PCODE: $000004F6 VOL: 0
+;PCODE: $000004F7 VOL: 0
+;PCODE: $000004F8 VOL: 0
+;PCODE: $000004F9 VOL: 0
+;PCODE: $000004FA VOL: 0
+;PCODE: $000004FB VOL: 0
+;PCODE: $000004FC VOL: 0
+;PCODE: $000004FD VOL: 0
+;PCODE: $000004FE VOL: 0
+;PCODE: $000004FF VOL: 0
+;PCODE: $00000500 VOL: 0
+;PCODE: $00000501 VOL: 1
+;PCODE: $00000502 VOL: 0
+;PCODE: $00000503 VOL: 0
+;PCODE: $00000504 VOL: 0
+;PCODE: $00000505 VOL: 0
+; 0000 020F             {
+; 0000 0210                 blok_lamp_1_OFF         ;
+;PCODE: $00000506 VOL: 0
+;PCODE: $00000507 VOL: 0
+; 0000 0211                 blok_lamp_2_OFF         ;
+;PCODE: $00000508 VOL: 0
+;PCODE: $00000509 VOL: 0
+; 0000 0212                 blok_lamp_3_OFF         ;
+;PCODE: $0000050A VOL: 0
+;PCODE: $0000050B VOL: 0
+; 0000 0213                 blok_lamp_en_OFF        ;
+;PCODE: $0000050C VOL: 0
+;PCODE: $0000050D VOL: 0
+; 0000 0214                 blok_lamp_dis_OFF       ;
+;PCODE: $0000050E VOL: 0
+;PCODE: $0000050F VOL: 0
+; 0000 0215                 blok_silovoy_en_OFF     ;
+;PCODE: $00000510 VOL: 0
+;PCODE: $00000511 VOL: 0
+; 0000 0216                 blok_silovoy_dis_OFF    ;
+;PCODE: $00000512 VOL: 0
+;PCODE: $00000513 VOL: 0
+; 0000 0217                 blok_rezerv_OFF         ;
+;PCODE: $00000514 VOL: 0
+;PCODE: $00000515 VOL: 0
+; 0000 0218             }
+; 0000 0219             break;
+;PCODE: $00000516 VOL: 0
+;PCODE: $00000517 VOL: 0
+; 0000 021A         case 21		:
+;PCODE: $00000518 VOL: 0
+;PCODE: $00000519 VOL: 0
+;PCODE: $0000051A VOL: 0
+; 0000 021B             if (regim_rabot_old==(60||70||80||100))
+;PCODE: $0000051B VOL: 0
+;PCODE: $0000051C VOL: 0
+;PCODE: $0000051D VOL: 0
+;PCODE: $0000051E VOL: 0
+;PCODE: $0000051F VOL: 0
+;PCODE: $00000520 VOL: 0
+;PCODE: $00000521 VOL: 0
+;PCODE: $00000522 VOL: 0
+;PCODE: $00000523 VOL: 0
+;PCODE: $00000524 VOL: 0
+;PCODE: $00000525 VOL: 0
+;PCODE: $00000526 VOL: 0
+;PCODE: $00000527 VOL: 0
+;PCODE: $00000528 VOL: 0
+;PCODE: $00000529 VOL: 0
+;PCODE: $0000052A VOL: 0
+;PCODE: $0000052B VOL: 0
+;PCODE: $0000052C VOL: 1
+;PCODE: $0000052D VOL: 0
+;PCODE: $0000052E VOL: 0
+;PCODE: $0000052F VOL: 0
+;PCODE: $00000530 VOL: 0
+; 0000 021C             {
+; 0000 021D                 blok_lamp_1_OFF         ;
+;PCODE: $00000531 VOL: 0
+;PCODE: $00000532 VOL: 0
+; 0000 021E                 blok_lamp_2_OFF         ;
+;PCODE: $00000533 VOL: 0
+;PCODE: $00000534 VOL: 0
+; 0000 021F                 blok_lamp_3_OFF         ;
+;PCODE: $00000535 VOL: 0
+;PCODE: $00000536 VOL: 0
+; 0000 0220                 blok_lamp_en_OFF        ;
+;PCODE: $00000537 VOL: 0
+;PCODE: $00000538 VOL: 0
+; 0000 0221                 blok_lamp_dis_OFF       ;
+;PCODE: $00000539 VOL: 0
+;PCODE: $0000053A VOL: 0
+; 0000 0222                 blok_silovoy_en_OFF     ;
+;PCODE: $0000053B VOL: 0
+;PCODE: $0000053C VOL: 0
+; 0000 0223                 blok_silovoy_dis_OFF    ;
+;PCODE: $0000053D VOL: 0
+;PCODE: $0000053E VOL: 0
+; 0000 0224                 blok_rezerv_OFF         ;
+;PCODE: $0000053F VOL: 0
+;PCODE: $00000540 VOL: 0
+; 0000 0225             }
+; 0000 0226             break;
+;PCODE: $00000541 VOL: 0
+;PCODE: $00000542 VOL: 0
+; 0000 0227         case 22		:
+;PCODE: $00000543 VOL: 0
+;PCODE: $00000544 VOL: 0
+;PCODE: $00000545 VOL: 0
+; 0000 0228             if (regim_rabot_old==(60||70||80||100))
+;PCODE: $00000546 VOL: 0
+;PCODE: $00000547 VOL: 0
+;PCODE: $00000548 VOL: 0
+;PCODE: $00000549 VOL: 0
+;PCODE: $0000054A VOL: 0
+;PCODE: $0000054B VOL: 0
+;PCODE: $0000054C VOL: 0
+;PCODE: $0000054D VOL: 0
+;PCODE: $0000054E VOL: 0
+;PCODE: $0000054F VOL: 0
+;PCODE: $00000550 VOL: 0
+;PCODE: $00000551 VOL: 0
+;PCODE: $00000552 VOL: 0
+;PCODE: $00000553 VOL: 0
+;PCODE: $00000554 VOL: 0
+;PCODE: $00000555 VOL: 0
+;PCODE: $00000556 VOL: 0
+;PCODE: $00000557 VOL: 1
+;PCODE: $00000558 VOL: 0
+;PCODE: $00000559 VOL: 0
+;PCODE: $0000055A VOL: 0
+;PCODE: $0000055B VOL: 0
+; 0000 0229             {
+; 0000 022A                 blok_lamp_1_OFF         ;
+;PCODE: $0000055C VOL: 0
+;PCODE: $0000055D VOL: 0
+; 0000 022B                 blok_lamp_2_OFF         ;
+;PCODE: $0000055E VOL: 0
+;PCODE: $0000055F VOL: 0
+; 0000 022C                 blok_lamp_3_OFF         ;
+;PCODE: $00000560 VOL: 0
+;PCODE: $00000561 VOL: 0
+; 0000 022D                 blok_lamp_en_OFF        ;
+;PCODE: $00000562 VOL: 0
+;PCODE: $00000563 VOL: 0
+; 0000 022E                 blok_lamp_dis_OFF       ;
+;PCODE: $00000564 VOL: 0
+;PCODE: $00000565 VOL: 0
+; 0000 022F                 blok_silovoy_en_OFF     ;
+;PCODE: $00000566 VOL: 0
+;PCODE: $00000567 VOL: 0
+; 0000 0230                 blok_silovoy_dis_OFF    ;
+;PCODE: $00000568 VOL: 0
+;PCODE: $00000569 VOL: 0
+; 0000 0231                 blok_rezerv_OFF         ;
+;PCODE: $0000056A VOL: 0
+;PCODE: $0000056B VOL: 0
+; 0000 0232             }
+; 0000 0233             break;
+;PCODE: $0000056C VOL: 0
+;PCODE: $0000056D VOL: 0
+; 0000 0234         case 31		:
+;PCODE: $0000056E VOL: 0
+;PCODE: $0000056F VOL: 0
+;PCODE: $00000570 VOL: 0
+; 0000 0235             if (regim_rabot_old==(60||70||80||100))
+;PCODE: $00000571 VOL: 0
+;PCODE: $00000572 VOL: 0
+;PCODE: $00000573 VOL: 0
+;PCODE: $00000574 VOL: 0
+;PCODE: $00000575 VOL: 0
+;PCODE: $00000576 VOL: 0
+;PCODE: $00000577 VOL: 0
+;PCODE: $00000578 VOL: 0
+;PCODE: $00000579 VOL: 0
+;PCODE: $0000057A VOL: 0
+;PCODE: $0000057B VOL: 0
+;PCODE: $0000057C VOL: 0
+;PCODE: $0000057D VOL: 0
+;PCODE: $0000057E VOL: 0
+;PCODE: $0000057F VOL: 0
+;PCODE: $00000580 VOL: 0
+;PCODE: $00000581 VOL: 0
+;PCODE: $00000582 VOL: 1
+;PCODE: $00000583 VOL: 0
+;PCODE: $00000584 VOL: 0
+;PCODE: $00000585 VOL: 0
+;PCODE: $00000586 VOL: 0
+; 0000 0236             {
+; 0000 0237                 blok_lamp_1_OFF         ;
+;PCODE: $00000587 VOL: 0
+;PCODE: $00000588 VOL: 0
+; 0000 0238                 blok_lamp_2_OFF         ;
+;PCODE: $00000589 VOL: 0
+;PCODE: $0000058A VOL: 0
+; 0000 0239                 blok_lamp_3_OFF         ;
+;PCODE: $0000058B VOL: 0
+;PCODE: $0000058C VOL: 0
+; 0000 023A                 blok_lamp_en_OFF        ;
+;PCODE: $0000058D VOL: 0
+;PCODE: $0000058E VOL: 0
+; 0000 023B                 blok_lamp_dis_OFF       ;
+;PCODE: $0000058F VOL: 0
+;PCODE: $00000590 VOL: 0
+; 0000 023C                 blok_silovoy_en_OFF     ;
+;PCODE: $00000591 VOL: 0
+;PCODE: $00000592 VOL: 0
+; 0000 023D                 blok_silovoy_dis_OFF    ;
+;PCODE: $00000593 VOL: 0
+;PCODE: $00000594 VOL: 0
+; 0000 023E                 blok_rezerv_OFF         ;
+;PCODE: $00000595 VOL: 0
+;PCODE: $00000596 VOL: 0
+; 0000 023F             }
+; 0000 0240             break;
+;PCODE: $00000597 VOL: 0
+;PCODE: $00000598 VOL: 0
+; 0000 0241         case 32		:
+;PCODE: $00000599 VOL: 0
+;PCODE: $0000059A VOL: 0
+;PCODE: $0000059B VOL: 0
+; 0000 0242             if (regim_rabot_old==(60||70||80||100))
+;PCODE: $0000059C VOL: 0
+;PCODE: $0000059D VOL: 0
+;PCODE: $0000059E VOL: 0
+;PCODE: $0000059F VOL: 0
+;PCODE: $000005A0 VOL: 0
+;PCODE: $000005A1 VOL: 0
+;PCODE: $000005A2 VOL: 0
+;PCODE: $000005A3 VOL: 0
+;PCODE: $000005A4 VOL: 0
+;PCODE: $000005A5 VOL: 0
+;PCODE: $000005A6 VOL: 0
+;PCODE: $000005A7 VOL: 0
+;PCODE: $000005A8 VOL: 0
+;PCODE: $000005A9 VOL: 0
+;PCODE: $000005AA VOL: 0
+;PCODE: $000005AB VOL: 0
+;PCODE: $000005AC VOL: 0
+;PCODE: $000005AD VOL: 1
+;PCODE: $000005AE VOL: 0
+;PCODE: $000005AF VOL: 0
+;PCODE: $000005B0 VOL: 0
+;PCODE: $000005B1 VOL: 0
+; 0000 0243             {
+; 0000 0244                 blok_lamp_1_OFF         ;
+;PCODE: $000005B2 VOL: 0
+;PCODE: $000005B3 VOL: 0
+; 0000 0245                 blok_lamp_2_OFF         ;
+;PCODE: $000005B4 VOL: 0
+;PCODE: $000005B5 VOL: 0
+; 0000 0246                 blok_lamp_3_OFF         ;
+;PCODE: $000005B6 VOL: 0
+;PCODE: $000005B7 VOL: 0
+; 0000 0247                 blok_lamp_en_OFF        ;
+;PCODE: $000005B8 VOL: 0
+;PCODE: $000005B9 VOL: 0
+; 0000 0248                 blok_lamp_dis_OFF       ;
+;PCODE: $000005BA VOL: 0
+;PCODE: $000005BB VOL: 0
+; 0000 0249                 blok_silovoy_en_OFF     ;
+;PCODE: $000005BC VOL: 0
+;PCODE: $000005BD VOL: 0
+; 0000 024A                 blok_silovoy_dis_OFF    ;
+;PCODE: $000005BE VOL: 0
+;PCODE: $000005BF VOL: 0
+; 0000 024B                 blok_rezerv_OFF         ;
+;PCODE: $000005C0 VOL: 0
+;PCODE: $000005C1 VOL: 0
+; 0000 024C             }
+; 0000 024D             break;
+;PCODE: $000005C2 VOL: 0
+;PCODE: $000005C3 VOL: 0
+; 0000 024E         case 41		:
+;PCODE: $000005C4 VOL: 0
+;PCODE: $000005C5 VOL: 0
+;PCODE: $000005C6 VOL: 0
+; 0000 024F             if (regim_rabot_old==(60||70||80||100))
+;PCODE: $000005C7 VOL: 0
+;PCODE: $000005C8 VOL: 0
+;PCODE: $000005C9 VOL: 0
+;PCODE: $000005CA VOL: 0
+;PCODE: $000005CB VOL: 0
+;PCODE: $000005CC VOL: 0
+;PCODE: $000005CD VOL: 0
+;PCODE: $000005CE VOL: 0
+;PCODE: $000005CF VOL: 0
+;PCODE: $000005D0 VOL: 0
+;PCODE: $000005D1 VOL: 0
+;PCODE: $000005D2 VOL: 0
+;PCODE: $000005D3 VOL: 0
+;PCODE: $000005D4 VOL: 0
+;PCODE: $000005D5 VOL: 0
+;PCODE: $000005D6 VOL: 0
+;PCODE: $000005D7 VOL: 0
+;PCODE: $000005D8 VOL: 1
+;PCODE: $000005D9 VOL: 0
+;PCODE: $000005DA VOL: 0
+;PCODE: $000005DB VOL: 0
+;PCODE: $000005DC VOL: 0
+; 0000 0250             {
+; 0000 0251                 blok_lamp_1_OFF         ;
+;PCODE: $000005DD VOL: 0
+;PCODE: $000005DE VOL: 0
+; 0000 0252                 blok_lamp_2_OFF         ;
+;PCODE: $000005DF VOL: 0
+;PCODE: $000005E0 VOL: 0
+; 0000 0253                 blok_lamp_3_OFF         ;
+;PCODE: $000005E1 VOL: 0
+;PCODE: $000005E2 VOL: 0
+; 0000 0254                 blok_lamp_en_OFF        ;
+;PCODE: $000005E3 VOL: 0
+;PCODE: $000005E4 VOL: 0
+; 0000 0255                 blok_lamp_dis_OFF       ;
+;PCODE: $000005E5 VOL: 0
+;PCODE: $000005E6 VOL: 0
+; 0000 0256                 blok_silovoy_en_OFF     ;
+;PCODE: $000005E7 VOL: 0
+;PCODE: $000005E8 VOL: 0
+; 0000 0257                 blok_silovoy_dis_OFF    ;
+;PCODE: $000005E9 VOL: 0
+;PCODE: $000005EA VOL: 0
+; 0000 0258                 blok_rezerv_OFF         ;
+;PCODE: $000005EB VOL: 0
+;PCODE: $000005EC VOL: 0
+; 0000 0259             }
+; 0000 025A             break;
+;PCODE: $000005ED VOL: 0
+;PCODE: $000005EE VOL: 0
+; 0000 025B         case 42		:
+;PCODE: $000005EF VOL: 0
+;PCODE: $000005F0 VOL: 0
+;PCODE: $000005F1 VOL: 0
+; 0000 025C             if (regim_rabot_old==(60||70||80||100))
+;PCODE: $000005F2 VOL: 0
+;PCODE: $000005F3 VOL: 0
+;PCODE: $000005F4 VOL: 0
+;PCODE: $000005F5 VOL: 0
+;PCODE: $000005F6 VOL: 0
+;PCODE: $000005F7 VOL: 0
+;PCODE: $000005F8 VOL: 0
+;PCODE: $000005F9 VOL: 0
+;PCODE: $000005FA VOL: 0
+;PCODE: $000005FB VOL: 0
+;PCODE: $000005FC VOL: 0
+;PCODE: $000005FD VOL: 0
+;PCODE: $000005FE VOL: 0
+;PCODE: $000005FF VOL: 0
+;PCODE: $00000600 VOL: 0
+;PCODE: $00000601 VOL: 0
+;PCODE: $00000602 VOL: 0
+;PCODE: $00000603 VOL: 1
+;PCODE: $00000604 VOL: 0
+;PCODE: $00000605 VOL: 0
+;PCODE: $00000606 VOL: 0
+;PCODE: $00000607 VOL: 0
+; 0000 025D             {
+; 0000 025E                 blok_lamp_1_OFF         ;
+;PCODE: $00000608 VOL: 0
+;PCODE: $00000609 VOL: 0
+; 0000 025F                 blok_lamp_2_OFF         ;
+;PCODE: $0000060A VOL: 0
+;PCODE: $0000060B VOL: 0
+; 0000 0260                 blok_lamp_3_OFF         ;
+;PCODE: $0000060C VOL: 0
+;PCODE: $0000060D VOL: 0
+; 0000 0261                 blok_lamp_en_OFF        ;
+;PCODE: $0000060E VOL: 0
+;PCODE: $0000060F VOL: 0
+; 0000 0262                 blok_lamp_dis_OFF       ;
+;PCODE: $00000610 VOL: 0
+;PCODE: $00000611 VOL: 0
+; 0000 0263                 blok_silovoy_en_OFF     ;
+;PCODE: $00000612 VOL: 0
+;PCODE: $00000613 VOL: 0
+; 0000 0264                 blok_silovoy_dis_OFF    ;
+;PCODE: $00000614 VOL: 0
+;PCODE: $00000615 VOL: 0
+; 0000 0265                 blok_rezerv_OFF         ;
+;PCODE: $00000616 VOL: 0
+;PCODE: $00000617 VOL: 0
+; 0000 0266             }
+; 0000 0267             break;
+;PCODE: $00000618 VOL: 0
+;PCODE: $00000619 VOL: 0
+; 0000 0268         case 60		:
+;PCODE: $0000061A VOL: 0
+;PCODE: $0000061B VOL: 0
+;PCODE: $0000061C VOL: 0
+; 0000 0269             if (regim_rabot_old==(11||12||21||22||31||31||41||42))
+;PCODE: $0000061D VOL: 0
+;PCODE: $0000061E VOL: 0
+;PCODE: $0000061F VOL: 0
+;PCODE: $00000620 VOL: 0
+;PCODE: $00000621 VOL: 0
+;PCODE: $00000622 VOL: 0
+;PCODE: $00000623 VOL: 0
+;PCODE: $00000624 VOL: 0
+;PCODE: $00000625 VOL: 0
+;PCODE: $00000626 VOL: 0
+;PCODE: $00000627 VOL: 0
+;PCODE: $00000628 VOL: 0
+;PCODE: $00000629 VOL: 0
+;PCODE: $0000062A VOL: 0
+;PCODE: $0000062B VOL: 0
+;PCODE: $0000062C VOL: 0
+;PCODE: $0000062D VOL: 0
+;PCODE: $0000062E VOL: 0
+;PCODE: $0000062F VOL: 0
+;PCODE: $00000630 VOL: 0
+;PCODE: $00000631 VOL: 0
+;PCODE: $00000632 VOL: 0
+;PCODE: $00000633 VOL: 0
+;PCODE: $00000634 VOL: 0
+;PCODE: $00000635 VOL: 0
+;PCODE: $00000636 VOL: 0
+;PCODE: $00000637 VOL: 0
+;PCODE: $00000638 VOL: 0
+;PCODE: $00000639 VOL: 0
+;PCODE: $0000063A VOL: 1
+;PCODE: $0000063B VOL: 0
+;PCODE: $0000063C VOL: 0
+;PCODE: $0000063D VOL: 0
+;PCODE: $0000063E VOL: 0
+; 0000 026A             {
+; 0000 026B                 blok_lamp_1_ON         ;
+;PCODE: $0000063F VOL: 0
+;PCODE: $00000640 VOL: 0
+; 0000 026C                 blok_lamp_2_ON         ;
+;PCODE: $00000641 VOL: 0
+;PCODE: $00000642 VOL: 0
+; 0000 026D                 blok_lamp_3_ON         ;
+;PCODE: $00000643 VOL: 0
+;PCODE: $00000644 VOL: 0
+; 0000 026E                 blok_lamp_dis_OFF      ;
+;PCODE: $00000645 VOL: 0
+;PCODE: $00000646 VOL: 0
+; 0000 026F                 blok_silovoy_en_OFF    ;
+;PCODE: $00000647 VOL: 0
+;PCODE: $00000648 VOL: 0
+; 0000 0270                 blok_silovoy_dis_OFF   ;
+;PCODE: $00000649 VOL: 0
+;PCODE: $0000064A VOL: 0
+; 0000 0271                 blok_rezerv_OFF        ;
+;PCODE: $0000064B VOL: 0
+;PCODE: $0000064C VOL: 0
+; 0000 0272 
+; 0000 0273                 blok_lamp_en_ON        ;
+;PCODE: $0000064D VOL: 0
+;PCODE: $0000064E VOL: 0
+; 0000 0274                 delay_ms(t_puskatel)   ;
+;PCODE: $0000064F VOL: 0
+;PCODE: $00000650 VOL: 0
+;PCODE: $00000651 VOL: 0
+;PCODE: $00000652 VOL: 0
+; 0000 0275                 blok_lamp_en_OFF       ;
+;PCODE: $00000653 VOL: 0
+;PCODE: $00000654 VOL: 0
+; 0000 0276             }
+; 0000 0277             if (real_temp<t_max_razogrev)
+;PCODE: $00000655 VOL: 0
+;PCODE: $00000656 VOL: 1
+;PCODE: $00000657 VOL: 1
+;PCODE: $00000658 VOL: 0
+;PCODE: $00000659 VOL: 0
+; 0000 0278             {
+; 0000 0279                 blok_lamp_en_ON        ;
+;PCODE: $0000065A VOL: 0
+;PCODE: $0000065B VOL: 0
+; 0000 027A                 delay_ms(t_puskatel)   ;
+;PCODE: $0000065C VOL: 0
+;PCODE: $0000065D VOL: 0
+;PCODE: $0000065E VOL: 0
+;PCODE: $0000065F VOL: 0
+; 0000 027B             }
+; 0000 027C 
+; 0000 027D                 blok_lamp_1_ON         ;
+;PCODE: $00000660 VOL: 0
+;PCODE: $00000661 VOL: 0
+;PCODE: $00000662 VOL: 0
+; 0000 027E                 blok_lamp_2_ON         ;
+;PCODE: $00000663 VOL: 0
+;PCODE: $00000664 VOL: 0
+; 0000 027F                 blok_lamp_3_ON         ;
+;PCODE: $00000665 VOL: 0
+;PCODE: $00000666 VOL: 0
+; 0000 0280                 blok_lamp_en_OFF      ;
+;PCODE: $00000667 VOL: 0
+;PCODE: $00000668 VOL: 0
+; 0000 0281             break;
+;PCODE: $00000669 VOL: 0
+; 0000 0282         case 70		:
+;PCODE: $0000066A VOL: 0
+;PCODE: $0000066B VOL: 0
+;PCODE: $0000066C VOL: 0
+; 0000 0283                 blok_lamp_1_ON         ;
+;PCODE: $0000066D VOL: 0
+;PCODE: $0000066E VOL: 0
+; 0000 0284                 blok_lamp_2_ON         ;
+;PCODE: $0000066F VOL: 0
+;PCODE: $00000670 VOL: 0
+; 0000 0285                 blok_lamp_3_ON         ;
+;PCODE: $00000671 VOL: 0
+;PCODE: $00000672 VOL: 0
+; 0000 0286 
+; 0000 0287                 blok_silovoy_en_ON    ;
+;PCODE: $00000673 VOL: 0
+;PCODE: $00000674 VOL: 0
+; 0000 0288             break;
+;PCODE: $00000675 VOL: 0
+; 0000 0289         case 80		:
+;PCODE: $00000676 VOL: 0
+;PCODE: $00000677 VOL: 0
+;PCODE: $00000678 VOL: 0
+; 0000 028A                 blok_lamp_1_ON         ;
+;PCODE: $00000679 VOL: 0
+;PCODE: $0000067A VOL: 0
+; 0000 028B                 blok_lamp_2_ON         ;
+;PCODE: $0000067B VOL: 0
+;PCODE: $0000067C VOL: 0
+; 0000 028C                 blok_lamp_3_ON         ;
+;PCODE: $0000067D VOL: 0
+;PCODE: $0000067E VOL: 0
+; 0000 028D 
+; 0000 028E                 blok_silovoy_en_ON    ;
+;PCODE: $0000067F VOL: 0
+;PCODE: $00000680 VOL: 0
+; 0000 028F             break;
+;PCODE: $00000681 VOL: 0
+; 0000 0290         case 100	:
+;PCODE: $00000682 VOL: 0
+;PCODE: $00000683 VOL: 0
+;PCODE: $00000684 VOL: 0
+; 0000 0291                 blok_lamp_1_OFF         ;
+;PCODE: $00000685 VOL: 0
+;PCODE: $00000686 VOL: 0
+; 0000 0292                 blok_lamp_2_OFF         ;
+;PCODE: $00000687 VOL: 0
+;PCODE: $00000688 VOL: 0
+; 0000 0293                 blok_lamp_3_OFF         ;
+;PCODE: $00000689 VOL: 0
+;PCODE: $0000068A VOL: 0
+; 0000 0294                 blok_lamp_en_OFF        ;
+;PCODE: $0000068B VOL: 0
+;PCODE: $0000068C VOL: 0
+; 0000 0295                 blok_lamp_dis_OFF       ;
+;PCODE: $0000068D VOL: 0
+;PCODE: $0000068E VOL: 0
+; 0000 0296                 blok_silovoy_en_OFF     ;
+;PCODE: $0000068F VOL: 0
+;PCODE: $00000690 VOL: 0
+; 0000 0297                 blok_silovoy_dis_OFF    ;
+;PCODE: $00000691 VOL: 0
+;PCODE: $00000692 VOL: 0
+; 0000 0298                 blok_rezerv_OFF         ;
+;PCODE: $00000693 VOL: 0
+;PCODE: $00000694 VOL: 0
+; 0000 0299             break;
+;PCODE: $00000695 VOL: 0
+; 0000 029A         default	    :
+;PCODE: $00000696 VOL: 0
+; 0000 029B             if (regim_rabot_old==(60||70||80||100))
+;PCODE: $00000697 VOL: 0
+;PCODE: $00000698 VOL: 0
+;PCODE: $00000699 VOL: 0
+;PCODE: $0000069A VOL: 0
+;PCODE: $0000069B VOL: 0
+;PCODE: $0000069C VOL: 0
+;PCODE: $0000069D VOL: 0
+;PCODE: $0000069E VOL: 0
+;PCODE: $0000069F VOL: 0
+;PCODE: $000006A0 VOL: 0
+;PCODE: $000006A1 VOL: 0
+;PCODE: $000006A2 VOL: 0
+;PCODE: $000006A3 VOL: 0
+;PCODE: $000006A4 VOL: 0
+;PCODE: $000006A5 VOL: 0
+;PCODE: $000006A6 VOL: 0
+;PCODE: $000006A7 VOL: 0
+;PCODE: $000006A8 VOL: 1
+;PCODE: $000006A9 VOL: 0
+;PCODE: $000006AA VOL: 0
+;PCODE: $000006AB VOL: 0
+;PCODE: $000006AC VOL: 0
+; 0000 029C             {
+; 0000 029D                 blok_lamp_1_OFF         ;
+;PCODE: $000006AD VOL: 0
+;PCODE: $000006AE VOL: 0
+; 0000 029E                 blok_lamp_2_OFF         ;
+;PCODE: $000006AF VOL: 0
+;PCODE: $000006B0 VOL: 0
+; 0000 029F                 blok_lamp_3_OFF         ;
+;PCODE: $000006B1 VOL: 0
+;PCODE: $000006B2 VOL: 0
+; 0000 02A0                 blok_lamp_en_OFF        ;
+;PCODE: $000006B3 VOL: 0
+;PCODE: $000006B4 VOL: 0
+; 0000 02A1                 blok_lamp_dis_OFF       ;
+;PCODE: $000006B5 VOL: 0
+;PCODE: $000006B6 VOL: 0
+; 0000 02A2                 blok_silovoy_en_OFF     ;
+;PCODE: $000006B7 VOL: 0
+;PCODE: $000006B8 VOL: 0
+; 0000 02A3                 blok_silovoy_dis_OFF    ;
+;PCODE: $000006B9 VOL: 0
+;PCODE: $000006BA VOL: 0
+; 0000 02A4                 blok_rezerv_OFF         ;
+;PCODE: $000006BB VOL: 0
+;PCODE: $000006BC VOL: 0
+; 0000 02A5             }
+; 0000 02A6             break;
+;PCODE: $000006BD VOL: 0
+;PCODE: $000006BE VOL: 0
+; 0000 02A7         };
+;PCODE: $000006BF VOL: 0
+; 0000 02A8 
+; 0000 02A9         regim_rabot_old = regim_rabot;
+;PCODE: $000006C0 VOL: 1
+;PCODE: $000006C1 VOL: 1
+; 0000 02AA }
+;PCODE: $000006C2 VOL: 0
+;PCODE: $000006C3 VOL: 0
+;//=================================================
+;void init(void)
+; 0000 02AD {
+;PCODE: $000006C4 VOL: 0
+;PCODE: $000006C5 VOL: 0
+; 0000 02AE // Port A initialization
+; 0000 02AF     PORTA=0x00;
+;PCODE: $000006C6 VOL: 0
+;PCODE: $000006C7 VOL: 0
+; 0000 02B0     DDRA=0xFF;
+;PCODE: $000006C8 VOL: 0
+;PCODE: $000006C9 VOL: 0
+; 0000 02B1 // Port B initialization
+; 0000 02B2     PORTB=0x00;
+;PCODE: $000006CA VOL: 0
+;PCODE: $000006CB VOL: 0
+; 0000 02B3     DDRB=0x00;
+;PCODE: $000006CC VOL: 0
+;PCODE: $000006CD VOL: 0
+; 0000 02B4 
+; 0000 02B5 // Инициализация порта клавиатуры.
+; 0000 02B6 // Port C initialization
+; 0000 02B7     PORTC=0xFF;         // вкл. подтягивающие резисторы
+;PCODE: $000006CE VOL: 0
+;PCODE: $000006CF VOL: 0
+; 0000 02B8     DDRC=0x00;          // весь порт как вход
+;PCODE: $000006D0 VOL: 0
+;PCODE: $000006D1 VOL: 0
+; 0000 02B9 
+; 0000 02BA // Timer/Counter 1 initialization
+; 0000 02BB // Clock source: System Clock
+; 0000 02BC // Clock value: 7,813 kHz
+; 0000 02BD // Mode: Normal top=FFFFh
+; 0000 02BE // OC1A output: Discon.
+; 0000 02BF // OC1B output: Discon.
+; 0000 02C0 // Noise Canceler: Off
+; 0000 02C1 // Input Capture on Falling Edge
+; 0000 02C2 // Timer 1 Overflow Interrupt: Off
+; 0000 02C3 // Input Capture Interrupt: Off
+; 0000 02C4 // Compare A Match Interrupt: On
+; 0000 02C5 // Compare B Match Interrupt: Off
+; 0000 02C6     TCCR1A=0x00;
+;PCODE: $000006D2 VOL: 0
+;PCODE: $000006D3 VOL: 0
+; 0000 02C7     TCCR1B=0x05;
+;PCODE: $000006D4 VOL: 0
+;PCODE: $000006D5 VOL: 0
+; 0000 02C8     TCNT1H=0x00;
+;PCODE: $000006D6 VOL: 0
+;PCODE: $000006D7 VOL: 0
+; 0000 02C9     TCNT1L=0x00;
+;PCODE: $000006D8 VOL: 0
+;PCODE: $000006D9 VOL: 0
+; 0000 02CA     ICR1H=0x00;
+;PCODE: $000006DA VOL: 0
+;PCODE: $000006DB VOL: 0
+; 0000 02CB     ICR1L=0x00;
+;PCODE: $000006DC VOL: 0
+;PCODE: $000006DD VOL: 0
+; 0000 02CC     OCR1AH=0x1E;
+;PCODE: $000006DE VOL: 0
+;PCODE: $000006DF VOL: 0
+; 0000 02CD     OCR1AL=0x85;
+;PCODE: $000006E0 VOL: 0
+;PCODE: $000006E1 VOL: 0
+; 0000 02CE     OCR1BH=0x00;
+;PCODE: $000006E2 VOL: 0
+;PCODE: $000006E3 VOL: 0
+; 0000 02CF     OCR1BL=0x00;
+;PCODE: $000006E4 VOL: 0
+;PCODE: $000006E5 VOL: 0
+; 0000 02D0 
+; 0000 02D1 // Timer(s)/Counter(s) Interrupt(s) initialization
+; 0000 02D2     TIMSK=0x10;
+;PCODE: $000006E6 VOL: 0
+;PCODE: $000006E7 VOL: 0
+; 0000 02D3 
+; 0000 02D4 //=================================================
+; 0000 02D5 // USART initialization
+; 0000 02D6 // Communication Parameters: 8 Data, 1 Stop, No Parity
+; 0000 02D7 // USART Receiver: On
+; 0000 02D8 // USART Transmitter: On
+; 0000 02D9 // USART Mode: Asynchronous
+; 0000 02DA // USART Baud Rate: 38400
+; 0000 02DB     UCSRA=0x00;
+;PCODE: $000006E8 VOL: 0
+;PCODE: $000006E9 VOL: 0
+; 0000 02DC     UCSRB=0x18;
+;PCODE: $000006EA VOL: 0
+;PCODE: $000006EB VOL: 0
+; 0000 02DD     UCSRC=0x86;
+;PCODE: $000006EC VOL: 0
+;PCODE: $000006ED VOL: 0
+; 0000 02DE     UBRRH=0x00;
+;PCODE: $000006EE VOL: 0
+;PCODE: $000006EF VOL: 0
+; 0000 02DF     UBRRL=0x0C;
+;PCODE: $000006F0 VOL: 0
+;PCODE: $000006F1 VOL: 0
+; 0000 02E0 //=================================================
+; 0000 02E1 // LCD module initialization
+; 0000 02E2     lcd_init(16);
+;PCODE: $000006F2 VOL: 0
+;PCODE: $000006F3 VOL: 0
+;PCODE: $000006F4 VOL: 0
+; 0000 02E3 }
+;PCODE: $000006F5 VOL: 0
+;PCODE: $000006F6 VOL: 0
+;
+;void main(void)
+; 0000 02E6 {
+;PCODE: $000006F7 VOL: 0
+; 0000 02E7     init();
+;PCODE: $000006F8 VOL: 0
+; 0000 02E8 
+; 0000 02E9     regim_rabot=1;             // Заставка
+;PCODE: $000006F9 VOL: 0
+;PCODE: $000006FA VOL: 1
+; 0000 02EA     frame();
+;PCODE: $000006FB VOL: 0
+; 0000 02EB     screen();
+;PCODE: $000006FC VOL: 0
+; 0000 02EC 
+; 0000 02ED     delay_ms(zadergka_zastavka);
+;PCODE: $000006FD VOL: 0
+;PCODE: $000006FE VOL: 0
+; 0000 02EE 
+; 0000 02EF     regim_rabot=11;            // Установка режима работ на задание температуры
+;PCODE: $000006FF VOL: 0
+;PCODE: $00000700 VOL: 1
+; 0000 02F0 
+; 0000 02F1     frame();
+;PCODE: $00000701 VOL: 0
+; 0000 02F2     screen();
+;PCODE: $00000702 VOL: 0
+; 0000 02F3 
+; 0000 02F4     #asm("sei")                // Разрешение прерываний
+;PCODE: $00000703 VOL: 0
+	sei
+;PCODE: $00000704 VOL: 0
+; 0000 02F5 
+; 0000 02F6     while(1)                   // Вечный цикл
+;PCODE: $00000705 VOL: 0
+; 0000 02F7     {
+; 0000 02F8         klaviatura();          // обработка нажатой кнопки
+;PCODE: $00000706 VOL: 0
+; 0000 02F9 
+; 0000 02FA         regim();
+;PCODE: $00000707 VOL: 0
+; 0000 02FB 
+; 0000 02FC /*
+; 0000 02FD         if (getchar()=='#')
+; 0000 02FE         {
+; 0000 02FF                 real_temp_1razryad = getchar();      // 1 разряд температуры при отображении
+; 0000 0300                 real_temp_2razryad = getchar();      // 2 разряд температуры при отображении
+; 0000 0301                 real_temp_3razryad = getchar();      // 3 разряд температуры при отображении
+; 0000 0302 
+; 0000 0303                 real_temp=(real_temp_1razryad*100+real_temp_2razryad*10+real_temp_3razryad);
+; 0000 0304         }
+; 0000 0305 */
+; 0000 0306         frame();
+;PCODE: $00000708 VOL: 0
+; 0000 0307         screen();
+;PCODE: $00000709 VOL: 0
+; 0000 0308     }
+;PCODE: $0000070A VOL: 0
+;PCODE: $0000070B VOL: 0
+; 0000 0309 }
+;PCODE: $0000070C VOL: 0
+;PCODE: $0000070D VOL: 0
+;PCODE: $0000070E VOL: 0

@@ -1,0 +1,4 @@
+main DSTACK_USAGE:0 DSTACK_LEVEL:0 FILE:"t-rs485.c" LINE:97
+printf DSTACK_USAGE:10 DSTACK_LEVEL:10 FILE:"c:\cvavreval\lib\stdio.lib" LINE:1476
+_print DSTACK_USAGE:20 DSTACK_LEVEL:30 FILE:"c:\cvavreval\lib\stdio.lib" LINE:503
+strlen DSTACK_USAGE:2 DSTACK_LEVEL:32 FILE:"c:\cvavreval\lib\string.lib" LINE:1707

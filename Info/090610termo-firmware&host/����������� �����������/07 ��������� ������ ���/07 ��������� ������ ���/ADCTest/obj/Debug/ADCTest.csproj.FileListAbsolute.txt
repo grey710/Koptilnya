@@ -1,0 +1,16 @@
+D:\Work\2009\05\090519 Модифицируем плату AVR-USB-MEGA16\Host\02 Проверяем работу АЦП\ADCTest\bin\Debug\ADCTest.exe
+D:\Work\2009\05\090519 Модифицируем плату AVR-USB-MEGA16\Host\02 Проверяем работу АЦП\ADCTest\bin\Debug\ADCTest.pdb
+D:\Work\2009\05\090519 Модифицируем плату AVR-USB-MEGA16\Host\02 Проверяем работу АЦП\ADCTest\obj\Debug\ResolveAssemblyReference.cache
+D:\Work\2009\05\090519 Модифицируем плату AVR-USB-MEGA16\Host\02 Проверяем работу АЦП\ADCTest\obj\Debug\ADCTest.Form1.resources
+D:\Work\2009\05\090519 Модифицируем плату AVR-USB-MEGA16\Host\02 Проверяем работу АЦП\ADCTest\obj\Debug\ADCTest.Properties.Resources.resources
+D:\Work\2009\05\090519 Модифицируем плату AVR-USB-MEGA16\Host\02 Проверяем работу АЦП\ADCTest\obj\Debug\ADCTest.csproj.GenerateResource.Cache
+D:\Work\2009\05\090519 Модифицируем плату AVR-USB-MEGA16\Host\02 Проверяем работу АЦП\ADCTest\obj\Debug\ADCTest.exe
+D:\Work\2009\05\090519 Модифицируем плату AVR-USB-MEGA16\Host\02 Проверяем работу АЦП\ADCTest\obj\Debug\ADCTest.pdb
+D:\Work\2009\06\090601 Измеряем и контролируем температуру (продолжение)\Программное обеспечение\04 Проверяем работу АЦП\ADCTest\obj\Debug\ADCTest.exe
+D:\Work\2009\06\090601 Измеряем и контролируем температуру (продолжение)\Программное обеспечение\04 Проверяем работу АЦП\ADCTest\obj\Debug\ADCTest.pdb
+D:\Work\2009\06\090601 Измеряем и контролируем температуру (продолжение)\Программное обеспечение\04 Проверяем работу АЦП\ADCTest\bin\Debug\ADCTest.exe
+D:\Work\2009\06\090601 Измеряем и контролируем температуру (продолжение)\Программное обеспечение\04 Проверяем работу АЦП\ADCTest\bin\Debug\ADCTest.pdb
+D:\Work\2009\06\090601 Измеряем и контролируем температуру (продолжение)\Программное обеспечение\04 Проверяем работу АЦП\ADCTest\obj\Debug\ResolveAssemblyReference.cache
+D:\Work\2009\06\090601 Измеряем и контролируем температуру (продолжение)\Программное обеспечение\04 Проверяем работу АЦП\ADCTest\obj\Debug\ADCTest.Form1.resources
+D:\Work\2009\06\090601 Измеряем и контролируем температуру (продолжение)\Программное обеспечение\04 Проверяем работу АЦП\ADCTest\obj\Debug\ADCTest.Properties.Resources.resources
+D:\Work\2009\06\090601 Измеряем и контролируем температуру (продолжение)\Программное обеспечение\04 Проверяем работу АЦП\ADCTest\obj\Debug\ADCTest.csproj.GenerateResource.Cache

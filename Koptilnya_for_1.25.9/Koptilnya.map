@@ -1,0 +1,39 @@
+CodeVisionAVR C Compiler V1.25.7 beta 5 Professional
+(C) Copyright 1998-2007 Pavel Haiduc, HP InfoTech s.r.l.
+http://www.hpinfotech.com
+
+File: D:\CAD\# Projects\Коптильня\Koptilnya\Koptilnya_for_1.25.9\Koptilnya.c
+Global variables memory map:
+
+Variable                          Address   Size
+rx_buffer                                                              E0h      8
+rx_wr_index                                                             R5      1
+rx_counter                                                              R4      1
+rx_buffer_overflow                                                    R2.0    1/8
+t_max_razogrev                                                         E8h      1
+t_max_rabochee                                                         E9h      1
+t_min_razogrev                                                         EAh      1
+t_min_rabochee                                                         EBh      1
+time_rabota_ch                                                         ECh      1
+time_rabota_min                                                        EDh      1
+time_smoke_ch                                                          EEh      1
+time_smoke_min                                                         EFh      1
+real_time_ch                                                           F0h      1
+real_time_min                                                          F1h      1
+real_time_sek                                                          F2h      1
+real_temp                                                              F3h      1
+real_temp_1razryad                                                     F4h      1
+real_temp_2razryad                                                     F5h      1
+real_temp_3razryad                                                     F6h      1
+regim_rabot                                                            F7h      1
+regim_rabot_old                                                        F8h      1
+zadergka_pri_nagatii                                                    R7      1
+zadergka_zastavka                                                    R8,R9      2
+t_puskatel                                                              R6      1
+lcd_str_1                                                              F9h     16
+lcd_str_2                                                             109h     16
+_base_y_G3                                                            119h      4
+_lcd_x                                                                 R11      1
+_lcd_y                                                                 R10      1
+_lcd_maxx                                                              R13      1
+*p_S61                                                                11Dh      2

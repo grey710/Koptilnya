@@ -1,0 +1,29 @@
+CodeVisionAVR C Compiler V1.24.8d Professional
+(C) Copyright 1998-2006 Pavel Haiduc, HP InfoTech s.r.l.
+http://www.hpinfotech.com
+
+File: C:\cvavr\avr_programming\payalnik\main.c
+Global variables memory map:
+
+Variable                          Address   Size
+lcd_buffer1                                                           160h      9
+lcd_buffer2                                                           169h      9
+adc_data                                                              172h      2
+T                                                                     174h      2
+ee_tmprSet                                                            176h      2
+T_prev                                                                178h      2
+T_now                                                                 17Ah      2
+T_disp                                                                17Ch      2
+ReadKey                                                               17Eh      2
+KeyDelay                                                              180h      2
+Mode                                                                  182h      2
+program                                                               184h      2
+i                                                                    R4,R5      2
+T0                                                                   R6,R7      2
+Kp                                                                   R8,R9      2
+pwm_val                                                               186h      2
+T_set                                                                 188h      6
+_base_y_G4                                                            18Eh      4
+_lcd_x                                                                 R10      1
+_lcd_y                                                                 R11      1
+_lcd_maxx                                                              R12      1

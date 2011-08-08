@@ -1,0 +1,5 @@
+VERSION:3 SOURCE_TIMESTAMP:3B9A9E58
+NODE:I LEVEL:0 LINE:14 "C:\cvavreval2\inc\mega8535.h"
+NODE:I LEVEL:0 LINE:15 "G:\сайт\заготовки\uart\PROG\usart-CodeVision\lcd_lib.h"
+NODE:I LEVEL:0 LINE:16 "G:\сайт\заготовки\uart\PROG\usart-CodeVision\usart.h"
+NODE:F LEVEL:0 LINE:18 "main(void)"

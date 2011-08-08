@@ -1,0 +1,26 @@
+RAM Allocation
+Variable                                                          Address   Size
+--------------------------------------------------------------------------------
+rx_buffer                                                         0x00E0       8
+real_temp                                                         0x00E8       1
+real_time_ch                                                      0x00E9       1
+real_time_min                                                     0x00EA       1
+real_time_sek                                                     0x00EB       1
+lcd_str_1                                                         0x00EC      16
+lcd_str_2                                                         0x00FC      16
+_base_y                                                           0x010C       4
+
+EEPROM Allocation
+Variable                                                          Address   Size
+--------------------------------------------------------------------------------
+
+Register Allocation
+Variable                                                          Register  Size
+--------------------------------------------------------------------------------
+rx_wr_index                                                       R5           1
+rx_rd_index                                                       R4           1
+rx_counter                                                        R7           1
+rx_buffer_overflow                                                R2.0      1bit
+_lcd_x                                                            R6           1
+_lcd_y                                                            R9           1
+_lcd_maxx                                                         R8           1

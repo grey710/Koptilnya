@@ -1,0 +1,35 @@
+#include "uart.h"
+    #include <mega8535.h>
+//однобайтный буфер
+unsigned char uartRxBuf = 0;
+
+//инициализация uart`a
+void UART_Init(void)
+{
+  UBRRH = 0;
+  UBRRL = 51; //скорость обмена 9600 бод
+  UCSRB = (1<<RXCIE)|(1<<RXEN)|(1<<TXEN); //разр. прерыв при приеме, разр приема, разр передачи.
+  UCSRC = (1<<URSEL)|(1<<UCSZ1)|(1<<UCSZ0); //размер слова 8 разрядов
+}
+
+//отправка символа по uart`у
+void UART_SendChar(unsigned char sym)
+{
+  while(!(UCSRA & (1<<UDRE)));
+  UDR = sym;
+}
+
+//чтение буфера
+unsigned char UART_GetChar(void)
+{
+  unsigned char tmp = uartRxBuf;
+  uartRxBuf = 0;
+  return tmp;  
+}
+
+//прием символа по uart`у в буфер
+interrupt [USART_RXC] void usart_rxc_my(void) 
+{
+  uartRxBuf = UDR; 
+} 
+

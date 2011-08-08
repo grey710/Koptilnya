@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>2</fileVersion>
+  <fileChecksum>3282897993</fileChecksum>
+  <configuration>
+    <name>Debug</name>
+    <outputs>
+      <file>$PROJ_DIR$\main.c</file>
+      <file>$PROJ_DIR$\Hardware.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\ycheck.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\DLib_Defaults.h</file>
+      <file>$PROJ_DIR$\RS232.c</file>
+      <file>$PROJ_DIR$\RS232.h</file>
+      <file>$TOOLKIT_DIR$\inc\ioavr.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\DLib_Product.h</file>
+      <file>$TOOLKIT_DIR$\src\template\cfg1soim.xcl</file>
+      <file>$PROJ_DIR$\Debug\Exe\blink_LED.d90</file>
+      <file>$TOOLKIT_DIR$\lib\dlib\dlAVR-1s-ec_mul-n.h</file>
+      <file>$TOOLKIT_DIR$\src\template\cfgm8.xcl</file>
+      <file>$PROJ_DIR$\Debug\List\main.lst</file>
+      <file>$PROJ_DIR$\Debug\Obj\RS232.r90</file>
+      <file>$PROJ_DIR$\Debug\Obj\RS232.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
+      <file>$PROJ_DIR$\Debug\List\RS232.lst</file>
+      <file>$PROJ_DIR$\Debug\Exe\blink_LED.ee.hex</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\stdint.h</file>
+      <file>$TOOLKIT_DIR$\lib\dlib\dlAVR-1s-ec_mul-n.r90</file>
+      <file>$PROJ_DIR$\ascold.h</file>
+      <file>$TOOLKIT_DIR$\inc\iom8.h</file>
+      <file>$TOOLKIT_DIR$\inc\inavr.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.r90</file>
+      <file>$PROJ_DIR$\Debug\List\blink_LED.map</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\DLib_Threads.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\yvals.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\xencoding_limits.h</file>
+      <file>$TOOLKIT_DIR$\inc\iomacro.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\blink_LED.pbd</file>
+      <file>$TOOLKIT_DIR$\inc\bitdefinitions\iom8.inc</file>
+      <file>$PROJ_DIR$\Debug\Exe\blink_LED.hex</file>
+    </outputs>
+    <file>
+      <name>$PROJ_DIR$\main.c</name>
+      <outputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 12 23</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 26</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 6 21 29 31 18 2 27 3 10 7 28 25 22 15 20 1 5</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 6 21 29 31 18 2 27 3 7 28 25 22 15 20 1 5</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\RS232.c</name>
+      <outputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 16 13</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 14</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 18 2 27 3 10 7 28 25 1 6 21 29 31</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18 2 27 3 7 28 25 1 6 21 29 31</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Debug\Exe\blink_LED.d90</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 24 32 17</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 11 8 13 23 19</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 9 24 32 17</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Debug\Obj\blink_LED.pbd</name>
+      <inputs>
+        <tool>
+          <name>BILINK</name>
+          <file> 14 26</file>
+        </tool>
+      </inputs>
+    </file>
+  </configuration>
+  <configuration>
+    <name>Release</name>
+    <outputs/>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>XLINK</tool>
+    </forcedrebuild>
+  </configuration>
+</project>
+
+

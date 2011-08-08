@@ -1,0 +1,338 @@
+###############################################################################
+#                                                                             #
+#                                                       16/Aug/2010  00:12:11 #
+# IAR C/C++ Compiler V5.40.0.20237/W32, Evaluation Version  for Atmel AVR     #
+# Copyright (C) 1996-2009 IAR Systems AB.                                     #
+#                                                                             #
+#    Source file  =  D:\works\docs\статьи\files\09\Blink LED mega8\main.c     #
+#    Command line =  "D:\works\docs\статьи\files\09\Blink LED mega8\main.c"   #
+#                    --cpu=m8 -ms -o "D:\works\docs\статьи\files\09\Blink     #
+#                    LED mega8\Debug\Obj\" -lCN "D:\works\docs\статьи\files\0 #
+#                    9\Blink LED mega8\Debug\List\" --initializers_in_flash   #
+#                    -z3 --no_cse --no_inline --no_code_motion                #
+#                    --no_cross_call --no_clustering --no_tbaa --debug        #
+#                    -DENABLE_BIT_DEFINITIONS -e -I "C:\Program Files         #
+#                    (x86)\IAR Systems\Embedded Workbench Evaluation          #
+#                    5.4\avr\INC\" -I "C:\Program Files (x86)\IAR             #
+#                    Systems\Embedded Workbench Evaluation                    #
+#                    5.4\avr\INC\DLIB\" --eeprom_size 512 --dlib_config       #
+#                    "C:\Program Files (x86)\IAR Systems\Embedded Workbench   #
+#                    Evaluation 5.4\avr\LIB\DLIB\dlAVR-1s-ec_mul-n.h"         #
+#    List file    =  D:\works\docs\статьи\files\09\Blink LED                  #
+#                    mega8\Debug\List\main.lst                                #
+#    Object file  =  D:\works\docs\статьи\files\09\Blink LED                  #
+#                    mega8\Debug\Obj\main.r90                                 #
+#                                                                             #
+#                                                                             #
+###############################################################################
+
+D:\works\docs\статьи\files\09\Blink LED mega8\main.c
+      1          #include <ioavr.h>       // здесь объявлены все SFR для 2313
+
+   \                                 In  segment ABSOLUTE, at 0x29
+   \   <__C20> volatile __io _A_UBRRL
+   \                     _A_UBRRL:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x2a
+   \   <__C22> volatile __io _A_UCSRB
+   \                     _A_UCSRB:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x31
+   \   <__C36> volatile __io _A_DDRD
+   \                     _A_DDRD:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x32
+   \   <__C38> volatile __io _A_PORTD
+   \                     _A_PORTD:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x37
+   \   <__C48> volatile __io _A_DDRB
+   \                     _A_DDRB:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x38
+   \   <__C50> volatile __io _A_PORTB
+   \                     _A_PORTB:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x4a
+   \   <__C83> volatile __io _A_OCR1A
+   \                     _A_OCR1A:
+   \   00000000                      DS8 2
+
+   \                                 In  segment ABSOLUTE, at 0x4e
+   \   <__C89> volatile __io _A_TCCR1B
+   \                     _A_TCCR1B:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x59
+   \   <__C111> volatile __io _A_TIMSK
+   \                     _A_TIMSK:
+   \   00000000                      DS8 1
+      2          #include <stdint.h>      // в нем описан uint32_t
+      3          #include <inavr.h>       // здесь объявлены фукции разрешения/запрета прерываний, nop и прочие полезные                          
+      4          #include "ascold.h"      // здесь описаны очень удобные макросы дерганья ногами
+      5          #include "Hardware.h"
+      6          #include "RS232.h"
+      7          
+      8          #define LED_BLINK_PERIOD 500U
+
+   \                                 In  segment NEAR_Z, align 1, keep-with-next
+   \   00000000                      REQUIRE `?<Segment init: NEAR_Z>`
+      9          volatile uint32_t CntT1_ms;
+   \                     CntT1_ms:
+   \   00000000                      DS8 4
+     10          
+     11          //=========================== interrupts =====================================
+     12          #pragma vector = TIMER1_COMPA_vect
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     13          __interrupt void overflow_timer1(void) 
+   \                     overflow_timer1:
+     14            { 
+   \   00000000   93FA               ST      -Y, R31
+   \   00000002   93EA               ST      -Y, R30
+   \   00000004   934A               ST      -Y, R20
+   \   00000006   933A               ST      -Y, R19
+   \   00000008   932A               ST      -Y, R18
+   \   0000000A   931A               ST      -Y, R17
+   \   0000000C   930A               ST      -Y, R16
+   \   0000000E   B74F               IN      R20, 0x3F
+     15              CntT1_ms++; // each ms will interrupt 
+   \   00000010   ....               LDI     R30, LOW(CntT1_ms)
+   \   00000012   ....               LDI     R31, (CntT1_ms) >> 8
+   \   00000014   8100               LD      R16, Z
+   \   00000016   8111               LDD     R17, Z+1
+   \   00000018   8122               LDD     R18, Z+2
+   \   0000001A   8133               LDD     R19, Z+3
+   \   0000001C   5F0F               SUBI    R16, 255
+   \   0000001E   4F1F               SBCI    R17, 255
+   \   00000020   4F2F               SBCI    R18, 255
+   \   00000022   4F3F               SBCI    R19, 255
+   \   00000024   8300               ST      Z, R16
+   \   00000026   8311               STD     Z+1, R17
+   \   00000028   8322               STD     Z+2, R18
+   \   0000002A   8333               STD     Z+3, R19
+     16            }
+   \   0000002C   BF4F               OUT     0x3F, R20
+   \   0000002E   9109               LD      R16, Y+
+   \   00000030   9119               LD      R17, Y+
+   \   00000032   9129               LD      R18, Y+
+   \   00000034   9139               LD      R19, Y+
+   \   00000036   9149               LD      R20, Y+
+   \   00000038   91E9               LD      R30, Y+
+   \   0000003A   91F9               LD      R31, Y+
+   \   0000003C   9518               RETI
+     17          //============================================================================
+     18          //****************************************************************************
+     19          //============================================================================
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     20          char __low_level_init (void) {   // эта функция вызывается сразу после
+   \                     __low_level_init:
+     21                                           // включения процика после установки
+     22                                           // указателей стека.
+     23                                           // Здесь можно настроить периферию
+     24          
+     25                  UBRRL = ((OSC / 16 / RS232_BAUDRATE - 1) >> 0) & 0xFF;   //for USART
+   \   00000000   E109               LDI     R16, 25
+   \   00000002   B909               OUT     0x09, R16
+     26                  //UCSRB = (1<<TXEN); // only for RX         
+     27                  UCSRB = (1 << RXCIE) | (1<<RXEN) | (1<<TXEN); //for RX & TX, enable interrupts
+   \   00000004   E908               LDI     R16, 152
+   \   00000006   B90A               OUT     0x0A, R16
+     28                  
+     29                  TCCR1B= (1<<WGM12) | (0<<CS12)|(0<<CS11) |(1<<CS10); //CTC mode, no prescaling
+   \   00000008   E009               LDI     R16, 9
+   \   0000000A   BD0E               OUT     0x2E, R16
+     30                  TIMSK = (1<<TOIE0)|(1<<OCIE1A);   //for counter 0 and counter 1 (1<<TICIE1)|
+   \   0000000C   E101               LDI     R16, 17
+   \   0000000E   BF09               OUT     0x39, R16
+     31                  OCR1A= (OSC / 1000);
+   \   00000010   E800               LDI     R16, 128
+   \   00000012   E31E               LDI     R17, 62
+   \   00000014   BD1B               OUT     0x2B, R17
+   \   00000016   BD0A               OUT     0x2A, R16
+     32          
+     33                  PORTB = (0<<7)|(0<<6)|(0<<5)|(0<<4)|(0<<3)|(0<<2)|(0<<1)|(0<<0);            // все ноги в 0
+   \   00000018   E000               LDI     R16, 0
+   \   0000001A   BB08               OUT     0x18, R16
+     34                  DDRB =(1<<7)|(1<<6)|(1<<5)|(1<<4)|(1<<3)|(1<<2)|(1<<1)|(1<<0);              // все ноги на вывод
+   \   0000001C   EF0F               LDI     R16, 255
+   \   0000001E   BB07               OUT     0x17, R16
+     35          
+     36                  PORTD = (0<<7)|(0<<6)|(0<<5)|(0<<4)|(0<<3)|(0<<2)|(0<<1)|(0<<0);            // все ноги в 0
+   \   00000020   E000               LDI     R16, 0
+   \   00000022   BB02               OUT     0x12, R16
+     37                  DDRD =(1<<7)|(1<<6)|(1<<5)|(1<<4)|(1<<3)|(1<<2)|(1<<1)|(1<<0);              // все ноги на вывод
+   \   00000024   EF0F               LDI     R16, 255
+   \   00000026   BB01               OUT     0x11, R16
+     38                  
+     39                  
+     40                  return 1;            // После возвращения проинициальзировать память                              
+   \   00000028   E001               LDI     R16, 1
+   \   0000002A   9508               RET
+   \   0000002C                      REQUIRE _A_UBRRL
+   \   0000002C                      REQUIRE _A_UCSRB
+   \   0000002C                      REQUIRE _A_DDRD
+   \   0000002C                      REQUIRE _A_PORTD
+   \   0000002C                      REQUIRE _A_DDRB
+   \   0000002C                      REQUIRE _A_PORTB
+   \   0000002C                      REQUIRE _A_OCR1A
+   \   0000002C                      REQUIRE _A_TCCR1B
+   \   0000002C                      REQUIRE _A_TIMSK
+     41          }
+     42          //============================================================================
+     43          //****************************************************************************
+     44          //====================== подфункции ==========================================
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     45          void  Delay(uint32_t t)         // только с большой буквы Delay!!! Конфликтует.
+   \                     Delay:
+     46              {                           // на задержке noop
+     47                uint32_t i;
+     48              for(i = 0; i < t; i++) {
+   \   00000000   E040               LDI     R20, 0
+   \   00000002   E050               LDI     R21, 0
+   \   00000004   E060               LDI     R22, 0
+   \   00000006   E070               LDI     R23, 0
+   \   00000008   C004               RJMP    ??Delay_0
+   \                     ??Delay_1:
+   \   0000000A   5F4F               SUBI    R20, 255
+   \   0000000C   4F5F               SBCI    R21, 255
+   \   0000000E   4F6F               SBCI    R22, 255
+   \   00000010   4F7F               SBCI    R23, 255
+   \                     ??Delay_0:
+   \   00000012   1740               CP      R20, R16
+   \   00000014   0751               CPC     R21, R17
+   \   00000016   0762               CPC     R22, R18
+   \   00000018   0773               CPC     R23, R19
+   \   0000001A   F3B8               BRCS    ??Delay_1
+     49                      }
+     50              }
+   \   0000001C   9508               RET
+     51          //============================================================================
+     52          
+     53          //============================================================================
+     54          //****************************************************************************
+     55          //================ main ======================================================
+     56          
+     57          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     58            void main (void) {
+   \                     main:
+     59          __enable_interrupt();
+   \   00000000   9478               SEI
+     60           uint32_t timeStamp =CntT1_ms;
+   \   00000002   ....               LDI     R30, LOW(CntT1_ms)
+   \   00000004   ....               LDI     R31, (CntT1_ms) >> 8
+   \   00000006   8100               LD      R16, Z
+   \   00000008   8111               LDD     R17, Z+1
+   \   0000000A   8122               LDD     R18, Z+2
+   \   0000000C   8133               LDD     R19, Z+3
+     61              for(;;) {              
+     62                
+     63                
+     64              if( hasinput() ) {
+   \                     ??main_0:
+   \   0000000E   ....               RCALL   hasinput
+   \   00000010   2300               TST     R16
+   \   00000012   F011               BREQ    ??main_1
+     65                     putchar( getchar() );
+   \   00000014   ....               RCALL   getchar
+   \   00000016   ....               RCALL   putchar
+     66                  }
+     67          
+     68               
+     69              Delay (500 MS);        
+   \                     ??main_1:
+   \   00000018   E000               LDI     R16, 0
+   \   0000001A   E315               LDI     R17, 53
+   \   0000001C   E02C               LDI     R18, 12
+   \   0000001E   E030               LDI     R19, 0
+   \   00000020   ....               RCALL   Delay
+     70           
+     71              putString("Hello!");
+   \   00000022   ....               LDI     R16, LOW(??str)
+   \   00000024   ....               LDI     R17, (??str) >> 8
+   \   00000026   ....               RCALL   puts_P
+     72              putString("\r\n");   
+   \   00000028   ....               LDI     R16, LOW(??str_1)
+   \   0000002A   ....               LDI     R17, (??str_1) >> 8
+   \   0000002C   ....               RCALL   puts_P
+   \   0000002E   CFEF               RJMP    ??main_0
+     73              
+     74          
+     75            }
+     76          }
+
+   \                                 In  segment NEAR_F, align 1, keep-with-next
+   \                     ??str:
+   \   00000000   65486C6C216F       DC8 "Hello!"
+   \              00          
+
+   \                                 In  segment NEAR_F, align 1, keep-with-next
+   \                     ??str_1:
+   \   00000000   0A0D00             DC8 "\015\012"
+
+   \                                 In  segment INTVEC, offset 0xc, root
+   \                     `??overflow_timer1??INTVEC 12`:
+   \   0000000C   ....               RJMP    overflow_timer1
+
+   Maximum stack usage in bytes:
+
+     Function         CSTACK RSTACK
+     --------         ------ ------
+     Delay                0      2
+     __low_level_init     0      2
+     main                 0      2
+       -> hasinput        0      2
+       -> getchar         0      2
+       -> putchar         0      2
+       -> Delay           0      2
+       -> puts_P          0      2
+       -> puts_P          0      2
+     overflow_timer1      7      2
+
+
+   Segment part sizes:
+
+     Function/Label               Bytes
+     --------------               -----
+     _A_UBRRL                        1
+     _A_UCSRB                        1
+     _A_DDRD                         1
+     _A_PORTD                        1
+     _A_DDRB                         1
+     _A_PORTB                        1
+     _A_OCR1A                        2
+     _A_TCCR1B                       1
+     _A_TIMSK                        1
+     CntT1_ms                        4
+     overflow_timer1                62
+     __low_level_init               44
+     Delay                          30
+     main                           48
+     str                             7
+     str                             3
+     ??overflow_timer1??INTVEC 12    2
+      Others                         6
+
+ 
+  10 bytes in segment ABSOLUTE
+ 184 bytes in segment CODE
+   6 bytes in segment INITTAB
+   2 bytes in segment INTVEC
+  10 bytes in segment NEAR_F
+   4 bytes in segment NEAR_Z
+ 
+ 194 bytes of CODE memory (+  8 bytes shared)
+   4 bytes of DATA memory (+ 10 bytes shared)
+
+Errors: none
+Warnings: none

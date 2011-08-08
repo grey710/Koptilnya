@@ -1,0 +1,16 @@
+D:\Work\2009\05\090519 Модифицируем плату AVR-USB-MEGA16\Host\03 Работаем с датчиками температуры\TempTest\bin\Debug\TempTest.exe
+D:\Work\2009\05\090519 Модифицируем плату AVR-USB-MEGA16\Host\03 Работаем с датчиками температуры\TempTest\bin\Debug\TempTest.pdb
+D:\Work\2009\05\090519 Модифицируем плату AVR-USB-MEGA16\Host\03 Работаем с датчиками температуры\TempTest\obj\Debug\ResolveAssemblyReference.cache
+D:\Work\2009\05\090519 Модифицируем плату AVR-USB-MEGA16\Host\03 Работаем с датчиками температуры\TempTest\obj\Debug\TempTest.Form1.resources
+D:\Work\2009\05\090519 Модифицируем плату AVR-USB-MEGA16\Host\03 Работаем с датчиками температуры\TempTest\obj\Debug\TempTest.Properties.Resources.resources
+D:\Work\2009\05\090519 Модифицируем плату AVR-USB-MEGA16\Host\03 Работаем с датчиками температуры\TempTest\obj\Debug\TempTest.csproj.GenerateResource.Cache
+D:\Work\2009\05\090519 Модифицируем плату AVR-USB-MEGA16\Host\03 Работаем с датчиками температуры\TempTest\obj\Debug\TempTest.exe
+D:\Work\2009\05\090519 Модифицируем плату AVR-USB-MEGA16\Host\03 Работаем с датчиками температуры\TempTest\obj\Debug\TempTest.pdb
+D:\Work\2009\06\090601 Измеряем и контролируем температуру (продолжение)\Программное обеспечение\02 Работаем с датчиками температуры\TempTest\obj\Debug\TempTest.exe
+D:\Work\2009\06\090601 Измеряем и контролируем температуру (продолжение)\Программное обеспечение\02 Работаем с датчиками температуры\TempTest\obj\Debug\TempTest.pdb
+D:\Work\2009\06\090601 Измеряем и контролируем температуру (продолжение)\Программное обеспечение\02 Работаем с датчиками температуры\TempTest\bin\Debug\TempTest.exe
+D:\Work\2009\06\090601 Измеряем и контролируем температуру (продолжение)\Программное обеспечение\02 Работаем с датчиками температуры\TempTest\bin\Debug\TempTest.pdb
+D:\Work\2009\06\090601 Измеряем и контролируем температуру (продолжение)\Программное обеспечение\02 Работаем с датчиками температуры\TempTest\obj\Debug\ResolveAssemblyReference.cache
+D:\Work\2009\06\090601 Измеряем и контролируем температуру (продолжение)\Программное обеспечение\02 Работаем с датчиками температуры\TempTest\obj\Debug\TempTest.Form1.resources
+D:\Work\2009\06\090601 Измеряем и контролируем температуру (продолжение)\Программное обеспечение\02 Работаем с датчиками температуры\TempTest\obj\Debug\TempTest.Properties.Resources.resources
+D:\Work\2009\06\090601 Измеряем и контролируем температуру (продолжение)\Программное обеспечение\02 Работаем с датчиками температуры\TempTest\obj\Debug\TempTest.csproj.GenerateResource.Cache

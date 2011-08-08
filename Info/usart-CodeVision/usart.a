@@ -1,0 +1,113 @@
+;#include "usart.h"
+;PCODE: $00000000 VOL: 0
+	#ifndef __SLEEP_DEFINED__
+;PCODE: $00000001 VOL: 0
+	#define __SLEEP_DEFINED__
+;PCODE: $00000002 VOL: 0
+	.EQU __se_bit=0x40
+;PCODE: $00000003 VOL: 0
+	.EQU __sm_mask=0xB0
+;PCODE: $00000004 VOL: 0
+	.EQU __sm_powerdown=0x20
+;PCODE: $00000005 VOL: 0
+	.EQU __sm_powersave=0x30
+;PCODE: $00000006 VOL: 0
+	.EQU __sm_standby=0xA0
+;PCODE: $00000007 VOL: 0
+	.EQU __sm_ext_standby=0xB0
+;PCODE: $00000008 VOL: 0
+	.EQU __sm_adc_noise_red=0x10
+;PCODE: $00000009 VOL: 0
+	.SET power_ctrl_reg=mcucr
+;PCODE: $0000000A VOL: 0
+	#endif
+;PCODE: $0000000B VOL: 0
+;PCODE: $0000000C VOL: 0
+;
+;//однобайтный буфер
+;unsigned char usartRxBuf = 0;
+;
+;#define RXCIE 7
+;#define RXEN  4
+;#define TXEN  3
+;#define URSEL 7
+;#define UCSZ1 2
+;#define UCSZ0 1
+;
+;//инициализация usart`a
+;void USART_Init(void)
+; 0002 000F {
+
+	.CSEG
+;PCODE: $0000000D VOL: 0
+;PCODE: $0000000E VOL: 0
+; 0002 0010   UBRRH = 0;
+;PCODE: $0000000F VOL: 0
+;PCODE: $00000010 VOL: 0
+; 0002 0011   UBRRL = 51; //скорость обмена 9600 бод
+;PCODE: $00000011 VOL: 0
+;PCODE: $00000012 VOL: 0
+; 0002 0012   UCSRB = (1<<RXCIE)|(1<<RXEN)|(1<<TXEN); //разр. прерыв при приеме, разр приема, разр передачи.
+;PCODE: $00000013 VOL: 0
+;PCODE: $00000014 VOL: 0
+; 0002 0013   UCSRC = (1<<URSEL)|(1<<UCSZ1)|(1<<UCSZ0); //размер слова 8 разрядов
+;PCODE: $00000015 VOL: 0
+;PCODE: $00000016 VOL: 0
+; 0002 0014 }
+;PCODE: $00000017 VOL: 0
+;PCODE: $00000018 VOL: 0
+;
+;#define UDRE 5
+;//отправка символа по usart`у
+;void USART_SendChar(unsigned char sym)
+; 0002 0019 {
+;PCODE: $00000019 VOL: 0
+;PCODE: $0000001A VOL: 0
+; 0002 001A   while(!(UCSRA & (1<<UDRE)));
+;	sym -> Y+0
+;PCODE: $0000001B VOL: 0
+;PCODE: $0000001C VOL: 0
+;PCODE: $0000001D VOL: 0
+;PCODE: $0000001E VOL: 0
+;PCODE: $0000001F VOL: 0
+;PCODE: $00000020 VOL: 0
+; 0002 001B   UDR = sym;
+;PCODE: $00000021 VOL: 0
+;PCODE: $00000022 VOL: 0
+; 0002 001C }
+;PCODE: $00000023 VOL: 0
+;PCODE: $00000024 VOL: 0
+;PCODE: $00000025 VOL: 0
+;
+;//чтение буфера
+;unsigned char USART_GetChar(void)
+; 0002 0020 {
+;PCODE: $00000026 VOL: 0
+;PCODE: $00000027 VOL: 0
+; 0002 0021   unsigned char tmp = usartRxBuf;
+; 0002 0022   usartRxBuf = 0;
+;PCODE: $00000028 VOL: 0
+;	tmp -> R17
+;PCODE: $00000029 VOL: 0
+;PCODE: $0000002A VOL: 0
+;PCODE: $0000002B VOL: 0
+; 0002 0023   return tmp;
+;PCODE: $0000002C VOL: 0
+;PCODE: $0000002D VOL: 0
+;PCODE: $0000002E VOL: 0
+; 0002 0024 }
+;PCODE: $0000002F VOL: 0
+;
+;//прием символа по usart`у в буфер
+;interrupt [USART_RXC] void usart_rxc_my(void)
+; 0002 0028 {
+;PCODE: $00000030 VOL: 0
+;PCODE: $00000031 VOL: 0
+; 0002 0029   usartRxBuf = UDR;
+;PCODE: $00000032 VOL: 0
+;PCODE: $00000033 VOL: 0
+; 0002 002A }
+;PCODE: $00000034 VOL: 0
+;PCODE: $00000035 VOL: 0
+;PCODE: $00000036 VOL: 0
+;

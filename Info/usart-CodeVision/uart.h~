@@ -1,0 +1,10 @@
+#ifndef UART_H
+#define UART_H
+
+#include <mega8535.h>
+
+void UART_Init(void); //инициализация uart`a
+void UART_SendChar(unsigned char sym); //послать символ по uart`у
+unsigned char UART_GetChar(void); //прочитать приемный буфер uart`a 
+
+#endif //UART_H

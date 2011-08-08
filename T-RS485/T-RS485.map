@@ -1,0 +1,14 @@
+RAM Allocation
+Variable                                                          Address   Size
+--------------------------------------------------------------------------------
+
+EEPROM Allocation
+Variable                                                          Address   Size
+--------------------------------------------------------------------------------
+
+Register Allocation
+Variable                                                          Register  Size
+--------------------------------------------------------------------------------
+adc_data                                                          R4,R5        2
+T_now                                                             R6,R7        2
+i                                                                 R8,R9        2

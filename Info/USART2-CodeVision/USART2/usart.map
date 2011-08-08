@@ -1,0 +1,19 @@
+RAM Allocation
+Variable                                                          Address   Size
+--------------------------------------------------------------------------------
+usartTxBuf                                                        00ECh       16
+usartRxBuf                                                        00FCh       16
+
+EEPROM Allocation
+Variable                                                          Address   Size
+--------------------------------------------------------------------------------
+
+Register Allocation
+Variable                                                          Register  Size
+--------------------------------------------------------------------------------
+txBufTail                                                         R5           1
+txBufHead                                                         R4           1
+txCount                                                           R7           1
+rxBufTail                                                         R6           1
+rxBufHead                                                         R9           1
+rxCount                                                           R8           1
